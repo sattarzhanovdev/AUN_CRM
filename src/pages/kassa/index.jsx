@@ -3,51 +3,78 @@ import { API } from '../../api'
 
 const Kassa = () => {
   const [cart, setCart] = React.useState([])
+  const [goods, setGoods] = React.useState([])
   const inputRef = React.useRef()
+  const [paymentType, setPaymentType] = React.useState('cash')
 
   const total = cart.reduce((sum, item) => sum + parseFloat(item.price) * item.qty, 0)
 
-  const handleScan = async (e) => {
+  React.useEffect(() => {
+    API.getStocks()
+      .then(res => setGoods(res.data))
+      .catch(err => console.error('Ошибка загрузки товаров:', err))
+  }, [])
+
+  const handleScan = (e) => {
     if (e.key === 'Enter') {
       const code = e.target.value.trim()
       if (!code) return
 
-      try {
-        const res = await API.getStockByCode(code)
-        const found = Array.isArray(res.data) ? res.data[0] : res.data
-
-        if (!found) {
-          alert('Товар не найден')
-          e.target.value = ''
-          return
-        }
-
-        setCart(prev => {
-          const existing = prev.find(p => p.id === found.id)
-          if (existing) {
-            return prev.map(p =>
-              p.id === found.id ? { ...p, qty: p.qty + 1 } : p
-            )
-          }
-          return [...prev, { ...found, qty: 1 }]
-        })
-
+      const item = goods.find(g => g.code === code)
+      if (!item) {
+        alert('Товар не найден')
         e.target.value = ''
-      } catch (err) {
-        console.error('Ошибка при поиске товара:', err)
-        e.target.value = ''
+        return
       }
+
+      setCart(prev => {
+        const existing = prev.find(p => p.id === item.id)
+        if (existing) {
+          return prev.map(p =>
+            p.id === item.id ? { ...p, qty: p.qty + 1 } : p
+          )
+        }
+        return [...prev, { ...item, qty: 1 }]
+      })
+
+      e.target.value = ''
     }
   }
 
   const handleSell = async () => {
+    if (!cart.length) return alert('Корзина пуста')
+
     try {
+      // Обновляем количество на складе
       await Promise.all(cart.map(item => {
         const newQty = parseFloat(item.quantity) - item.qty
-        return API.updateStockById(item.id, { quantity: newQty })
+        return API.updateStockQuantity(item.id, {
+          code: item.code,
+          name: item.name,
+          price: item.price,
+          unit: item.unit,
+          quantity: newQty
+        })
       }))
+
+      // Отправляем историю продажи
+      const salePayload = {
+        total: total,
+        payment_type: paymentType,
+        items: cart.map(item => ({
+          stock_id: item.id,
+          code: item.code, // ✅ добавляем код
+          name: item.name,
+          price: item.price,
+          quantity: item.qty,
+          total: (parseFloat(item.price) * item.qty).toFixed(2)
+        }))
+}
+
+      await API.createSale(salePayload)
+
       setCart([])
-      alert('Продажа завершена')
+      alert('Продажа завершена и чек напечатан')
     } catch (err) {
       console.error('Ошибка при продаже:', err)
       alert('Ошибка при продаже')
@@ -65,6 +92,14 @@ const Kassa = () => {
         ref={inputRef}
         autoFocus
       />
+
+      <div style={{ marginTop: 10 }}>
+        <label>Тип оплаты: </label>
+        <select value={paymentType} onChange={e => setPaymentType(e.target.value)}>
+          <option value="cash">Наличные</option>
+          <option value="card">Карта</option>
+        </select>
+      </div>
 
       <table border="1" cellPadding="10" style={{ marginTop: 20, width: '100%' }}>
         <thead>
