@@ -20,6 +20,11 @@ export const NavList = [
     id: 4,
     title: 'Склад',
     route: '/stock'
+  },
+  {
+    id: 5,
+    title: 'Касса',
+    route: '/kassa'
   }
 ]
 
