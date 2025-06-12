@@ -1,6 +1,5 @@
 import AddClient from './addClient'
 import AddExpense from './addExpense'
-import AddStock from './addStock'
 import ClientsReport from './clientsReport'
 import ClientsTable from './clientsTable'
 import EditClient from './editClient'
