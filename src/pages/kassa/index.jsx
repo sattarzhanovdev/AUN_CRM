@@ -23,10 +23,10 @@ const Kassa = () => {
         }
 
         setCart(prev => {
-          const existing = prev.find(p => p.code === found.code)
+          const existing = prev.find(p => p.id === found.id)
           if (existing) {
             return prev.map(p =>
-              p.code === found.code ? { ...p, qty: p.qty + 1 } : p
+              p.id === found.id ? { ...p, qty: p.qty + 1 } : p
             )
           }
           return [...prev, { ...found, qty: 1 }]
@@ -44,7 +44,7 @@ const Kassa = () => {
     try {
       await Promise.all(cart.map(item => {
         const newQty = parseFloat(item.quantity) - item.qty
-        return API.updateStockQuantity(item.code, newQty)
+        return API.updateStockById(item.id, { quantity: newQty })
       }))
       setCart([])
       alert('Продажа завершена')
@@ -81,13 +81,13 @@ const Kassa = () => {
               <td>{item.name}</td>
               <td>{parseFloat(item.price)} сом</td>
               <td>{item.qty}</td>
-              <td>{parseFloat(item.price) * item.qty} сом</td>
+              <td>{(parseFloat(item.price) * item.qty).toFixed(2)} сом</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <h3>Итого: {total} сом</h3>
+      <h3>Итого: {total.toFixed(2)} сом</h3>
 
       <button onClick={handleSell}>Продать</button>
     </div>
