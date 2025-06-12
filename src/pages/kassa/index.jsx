@@ -5,8 +5,7 @@ const Kassa = () => {
   const [cart, setCart] = React.useState([])
   const inputRef = React.useRef()
 
-  // сумма
-  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0)
+  const total = cart.reduce((sum, item) => sum + parseFloat(item.price) * item.qty, 0)
 
   const handleScan = async (e) => {
     if (e.key === 'Enter') {
@@ -15,19 +14,27 @@ const Kassa = () => {
 
       try {
         const res = await API.getStockByCode(code)
-        const found = res.data
+        const found = Array.isArray(res.data) ? res.data[0] : res.data
+
+        if (!found) {
+          alert('Товар не найден')
+          e.target.value = ''
+          return
+        }
 
         setCart(prev => {
           const existing = prev.find(p => p.code === found.code)
           if (existing) {
-            return prev.map(p => p.code === found.code ? { ...p, qty: p.qty + 1 } : p)
+            return prev.map(p =>
+              p.code === found.code ? { ...p, qty: p.qty + 1 } : p
+            )
           }
           return [...prev, { ...found, qty: 1 }]
         })
 
         e.target.value = ''
       } catch (err) {
-        console.error('Товар не найден')
+        console.error('Ошибка при поиске товара:', err)
         e.target.value = ''
       }
     }
@@ -35,13 +42,15 @@ const Kassa = () => {
 
   const handleSell = async () => {
     try {
-      await Promise.all(cart.map(item => (
-        API.updateStockQuantity(item.code, item.quantity - item.qty)  // минусуем
-      )))
+      await Promise.all(cart.map(item => {
+        const newQty = parseFloat(item.quantity) - item.qty
+        return API.updateStockQuantity(item.code, newQty)
+      }))
       setCart([])
       alert('Продажа завершена')
     } catch (err) {
       console.error('Ошибка при продаже:', err)
+      alert('Ошибка при продаже')
     }
   }
 
@@ -51,13 +60,13 @@ const Kassa = () => {
 
       <input
         type="text"
-        placeholder="Сканируйте товар..."
+        placeholder="Сканируйте штрихкод..."
         onKeyDown={handleScan}
         ref={inputRef}
         autoFocus
       />
 
-      <table border="1" cellPadding="10" style={{ marginTop: 20 }}>
+      <table border="1" cellPadding="10" style={{ marginTop: 20, width: '100%' }}>
         <thead>
           <tr>
             <th>Наименование</th>
@@ -70,9 +79,9 @@ const Kassa = () => {
           {cart.map((item, idx) => (
             <tr key={idx}>
               <td>{item.name}</td>
-              <td>{item.price}</td>
+              <td>{parseFloat(item.price)} сом</td>
               <td>{item.qty}</td>
-              <td>{item.qty * item.price}</td>
+              <td>{parseFloat(item.price) * item.qty} сом</td>
             </tr>
           ))}
         </tbody>
