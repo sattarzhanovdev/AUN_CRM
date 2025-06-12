@@ -16,11 +16,11 @@ export const NavList = [
     title: 'Расходы',
     route: '/expenses'
   },
-  // {
-  //   id: 4,
-  //   title: 'Склад',
-  //   route: '/stock'
-  // }
+  {
+    id: 4,
+    title: 'Склад',
+    route: '/stock'
+  }
 ]
 
 
@@ -77,5 +77,10 @@ export const PUBLIC_ROUTES = [
     id: 6,
     page: <Pages.Storage />,
     route: '/stock'
+  },
+  {
+    id: 7,
+    page: <Pages.Kassa />,
+    route: '/kassa'
   }
 ]

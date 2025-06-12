@@ -5,14 +5,13 @@ import MainRoutes from './routes'
 import axios from 'axios'
 import BarcodeScanner from './pages/code'
 
-axios.defaults.baseURL = 'https://auncrm.pythonanywhere.com/clients'
+axios.defaults.baseURL = 'http://127.0.0.1:8000/clients'
 
 function App() {
   return (
     <div>
-      {/* <Components.Navbar />
-      <MainRoutes /> */}
-      <BarcodeScanner />
+      <Components.Navbar />
+      <MainRoutes />
     </div>
   )
 }
