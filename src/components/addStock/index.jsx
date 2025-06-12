@@ -5,7 +5,7 @@ import { API } from '../../api'
 
 const AddStock = ({ setActive }) => {
   const [count, setCount] = React.useState(1)
-  const [data, setData] = React.useState([{name: '', amount: '', price: '', price_seller: '', code: '', unit: 'шт'}])
+  const [data, setData] = React.useState([{name: '', quantity: '', price: '', price_seller: '', code: '', unit: 'шт'}])
 
   const handleChange = (index, field, value) => {
     const newData = [...data]
@@ -15,7 +15,7 @@ const AddStock = ({ setActive }) => {
 
   const handleAddForm = () => {
     setCount(prev => prev + 1)
-    setData(prev => [...prev, {name: '', amount: '', price: '', price_seller: '', code: '', unit: 'шт'}]);
+    setData(prev => [...prev, {name: '', quantity: '', price: '', price_seller: '', code: '', unit: 'шт'}]);
   }
 
   const handleSave = (value) => {
@@ -68,13 +68,13 @@ const AddStock = ({ setActive }) => {
             />
           </div>
           <div className={c.addExpense__form__item}>
-            <label htmlFor={`amount-${index}`}>Количество</label>
+            <label htmlFor={`quantity-${index}`}>Количество</label>
             <input
               type="number"
-              id={`amount-${index}`}
+              id={`quantity-${index}`}
               placeholder="Введите количество"
-              value={data[index]?.amount || ''}
-              onChange={e => handleChange(index, 'amount', e.target.value)}
+              value={data[index]?.quantity || ''}
+              onChange={e => handleChange(index, 'quantity', e.target.value)}
             />
           </div>
           <div className={c.addExpense__form__item}>
