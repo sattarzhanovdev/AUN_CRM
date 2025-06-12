@@ -23,4 +23,8 @@ export const API = {
   getTransactionById: (id) => axios.get(`/transactions/${id}/`),
   updateTransaction: (id, data) => axios.put(`/transactions/${id}/`, data),
   deleteTransaction: (id) => axios.delete(`/transactions/${id}/`),
+  getStocks: () => axios.get('/stocks/'),
+  postStock: (data) => axios.post('/stocks/', data),
+  getStockByCode: (code) => axios.get(`/stocks/?code=${code}`), // или другой эндпоинт
+  updateStockQuantity: (code, newQuantity) => axios.patch(`/stocks/${code}/`, { quantity: newQuantity }) // зависит от твоего API
 }

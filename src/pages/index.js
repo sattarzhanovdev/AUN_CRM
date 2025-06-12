@@ -3,6 +3,7 @@ import Finances from "./finances";
 import Main from "./main";
 import Expenses from "./expenses";
 import Storage from "./storage";
+import Kassa from "./kassa";
 
 export const Pages = {
   Main,
@@ -10,4 +11,5 @@ export const Pages = {
   Finances,
   Expenses,
   Storage,
+  Kassa
 }

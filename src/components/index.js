@@ -10,6 +10,9 @@ import FinancesTable from './financesTable'
 import MainReport from './mainReport'
 import Navbar from './navbar'
 import AddProfit from './addProfit'
+import StockReport from './stockReport'
+import StockTable from './stockTable'
+import AddStock from './addStock'
 
 export const Components = {
   Navbar,
@@ -28,7 +31,9 @@ export const Components = {
   AddClient,
   AddExpense,
   AddProfit,
+  AddStock,
 
   EditClient,
-
+  StockReport, 
+  StockTable
 }
