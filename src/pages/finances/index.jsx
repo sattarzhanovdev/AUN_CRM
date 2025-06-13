@@ -4,7 +4,7 @@ import { Components } from '../../components'
 const Finances = () => {
   return (
     <div>
-      <Components.FinancesReport />
+      {/* <Components.FinancesReport /> */}
       <Components.FinancesTable />
 
     </div>

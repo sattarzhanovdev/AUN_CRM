@@ -3,115 +3,161 @@ import c from './add.module.scss'
 import { Icons } from '../../assets/icons'
 import { API } from '../../api'
 
+const emptyRow = {
+  name: '',
+  quantity: '',
+  price: '',
+  category: '',
+  price_seller: '',
+  code: '',
+  unit: 'шт',
+  fixed_quantity: ''
+}
+
 const AddStock = ({ setActive }) => {
-  const [count, setCount] = React.useState(1)
-  const [data, setData] = React.useState([{name: '', quantity: '', price: '', price_seller: '', code: '', unit: 'шт'}])
+  const [rows, setRows] = React.useState([emptyRow])
+  const [categories, setCategories] = React.useState([])
 
+  // ---------- input helpers ----------
   const handleChange = (index, field, value) => {
-    const newData = [...data]
-    newData[index] = { ...newData[index], [field]: value }
-    setData(newData)
+    setRows(prev =>
+      prev.map((row, i) => {
+        if (i !== index) return row
+        // фиксируем первоначальное количество
+        if (field === 'quantity') {
+          return {
+            ...row,
+            quantity: value,
+            fixed_quantity: row.fixed_quantity || value
+          }
+        }
+        return { ...row, [field]: value }
+      })
+    )
   }
 
-  const handleAddForm = () => {
-    setCount(prev => prev + 1)
-    setData(prev => [...prev, {name: '', quantity: '', price: '', price_seller: '', code: '', unit: 'шт'}]);
-  }
+  const addRow = () => setRows(prev => [...prev, emptyRow])
 
-  const handleSave = (value) => {
-    API.postStock(value)
+  // ---------- save ----------
+  const handleSave = () => {
+    const payload = rows.map(item => ({
+      ...item,
+      fixed_quantity: item.fixed_quantity || item.quantity || 0,
+      quantity: +item.quantity || 0,
+      price: +item.price || 0,
+      price_seller: +item.price_seller || 0,
+      category_id: item.category || null
+    }))
+
+    API.postStock(payload)
       .then(res => {
-        if(res.status === 500) {
+        if (res.status === 201 || res.status === 200) {
           setActive(false)
           window.location.reload()
         }
       })
-      .catch(err =>{
-        if(err.status === 500) {
-          setActive(false)
-          window.location.reload()
-        }
-      })
-  };
+      .catch(err => console.error('Ошибка при сохранении товара:', err))
+  }
 
-  console.log(data);
+  // ---------- fetch categories once ----------
+  React.useEffect(() => {
+    API.getCategories()
+      .then(res => setCategories(res.data))
+      .catch(err => console.error('Не удалось загрузить категории:', err))
+  }, [])
 
+  // ---------- render ----------
   return (
     <div className={c.addExpense}>
       <div className={c.addExpense__header}>
         <h2>Добавление товара</h2>
       </div>
 
-      {Array.from({ length: count }).map((_, index) => (
-        <div
-          key={index}
-          className={c.addExpense__form}
-        >
+      {rows.map((row, idx) => (
+        <div key={idx} className={c.addExpense__form}>
+          {/* код */}
           <div className={c.addExpense__form__item}>
-            <label htmlFor={`name-${index}`}>Код товара</label>
+            <label htmlFor={`code-${idx}`}>Код</label>
             <input
-              type="text"
-              id={`name-${index}`}
+              id={`code-${idx}`}
+              value={row.code}
               placeholder="Код товара"
-              value={data[index]?.code || ''}
-              onChange={e => handleChange(index, 'code', e.target.value)}
+              onChange={e => handleChange(idx, 'code', e.target.value)}
             />
           </div>
+
+          {/* наименование */}
           <div className={c.addExpense__form__item}>
-            <label htmlFor={`name-${index}`}>Наименование товара</label>
+            <label htmlFor={`name-${idx}`}>Наименование</label>
             <input
-              type="text"
-              id={`name-${index}`}
-              placeholder="Введите наименование товара"
-              value={data[index]?.name || ''}
-              onChange={e => handleChange(index, 'name', e.target.value)}
+              id={`name-${idx}`}
+              value={row.name}
+              placeholder="Введите наименование"
+              onChange={e => handleChange(idx, 'name', e.target.value)}
             />
           </div>
+
+          {/* категория */}
           <div className={c.addExpense__form__item}>
-            <label htmlFor={`quantity-${index}`}>Количество</label>
+            <label htmlFor={`cat-${idx}`}>Категория</label>
+            <select
+              id={`cat-${idx}`}
+              value={row.category}
+              onChange={e => handleChange(idx, 'category', e.target.value)}
+            >
+              <option value="">‒ выберите ‒</option>
+              {categories.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* количество */}
+          <div className={c.addExpense__form__item}>
+            <label htmlFor={`qty-${idx}`}>Количество</label>
             <input
+              id={`qty-${idx}`}
               type="number"
-              id={`quantity-${index}`}
-              placeholder="Введите количество"
-              value={data[index]?.quantity || ''}
-              onChange={e => handleChange(index, 'quantity', e.target.value)}
+              value={row.quantity}
+              placeholder="0"
+              onChange={e => handleChange(idx, 'quantity', e.target.value)}
             />
           </div>
+
+          {/* цена поставщика */}
           <div className={c.addExpense__form__item}>
-            <label htmlFor={`price-${index}`}>Стоимость поставщика</label>
+            <label htmlFor={`ps-${idx}`}>Цена поставщика</label>
             <input
+              id={`ps-${idx}`}
               type="number"
-              id={`price-${index}`}
-              placeholder="Введите стоимость поставщика"
-              value={data[index]?.price_seller || ''}
-              onChange={e => handleChange(index, 'price_seller', e.target.value)}
+              value={row.price_seller}
+              placeholder="0"
+              onChange={e => handleChange(idx, 'price_seller', e.target.value)}
             />
           </div>
+
+          {/* цена продажи */}
           <div className={c.addExpense__form__item}>
-            <label htmlFor={`price-${index}`}>Стоимость на продаже</label>
+            <label htmlFor={`pr-${idx}`}>Цена продажи</label>
             <input
+              id={`pr-${idx}`}
               type="number"
-              id={`price-${index}`}
-              placeholder="Введите стоимость на продаже"
-              value={data[index]?.price || ''}
-              onChange={e => handleChange(index, 'price', e.target.value)}
+              value={row.price}
+              placeholder="0"
+              onChange={e => handleChange(idx, 'price', e.target.value)}
             />
           </div>
         </div>
       ))}
 
-      <button onClick={handleAddForm}>
-        <img src={Icons.plus} alt="plus" />
-        Добавить наименование
+      <button onClick={addRow}>
+        <img src={Icons.plus} alt="" /> Добавить строку
       </button>
 
       <div className={c.res}>
-        <button onClick={() => setActive(false)}>
-          Отменить
-        </button>
-        <button onClick={() => handleSave(data)}>
-          <img src={Icons.addGreen} alt="add" />
-          Сохранить
+        <button onClick={() => setActive(false)}>Отменить</button>
+        <button onClick={handleSave}>
+          <img src={Icons.addGreen} alt="" /> Сохранить
         </button>
       </div>
     </div>
