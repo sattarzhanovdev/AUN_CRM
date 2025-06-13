@@ -61,7 +61,8 @@ const StockTable = () => {
             <tr>
               <th><img src={Icons.edit} alt="edit" /></th>
               <th>Наименование</th>
-              <th>Количество</th>
+              <th>Было добавлено (кол-во)</th>
+              <th>Осталось</th>
               <th>Цена поставщика за ед</th>
               <th>Цена на продаже за ед</th>
               <th>
@@ -77,6 +78,7 @@ const StockTable = () => {
                 <tr key={item.id}>
                   <td><img src={Icons.edit} alt="edit" /></td>
                   <td>{item.name}</td>
+                  <td>{item.fixed_quantity}</td>
                   <td>{item.quantity}</td>
                   <td>{item.price_seller}</td>
                   <td>{item.price}</td>
