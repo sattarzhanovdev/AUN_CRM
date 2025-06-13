@@ -13,6 +13,7 @@ import AddProfit from './addProfit'
 import StockReport from './stockReport'
 import StockTable from './stockTable'
 import AddStock from './addStock'
+import EditStock from './editStock'
 
 export const Components = {
   Navbar,
@@ -34,6 +35,9 @@ export const Components = {
   AddStock,
 
   EditClient,
+  EditStock,
+
+
   StockReport, 
   StockTable
 }
