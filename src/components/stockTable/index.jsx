@@ -76,7 +76,10 @@ const StockTable = () => {
             {clients?.length > 0 ? (
               clients.map(item => (
                 <tr key={item.id}>
-                  <td><img src={Icons.edit} alt="edit" /></td>
+                  <td><img src={Icons.edit} alt="edit" onClick={() => {
+                    localStorage.setItem('editStock', JSON.stringify(item))
+                    setActive(true)
+                  }}/></td>
                   <td>{item.name}</td>
                   <td>{item.fixed_quantity}</td>
                   <td>{item.quantity}</td>
@@ -87,14 +90,14 @@ const StockTable = () => {
             ) : (
               <tr>
                 <td><img src={Icons.edit} alt="edit" /></td>
-                <td colSpan={6}>Клиентов нет</td>
+                <td colSpan={6}>Товаров нет</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
 
-      {active && <Components.AddStock setActive={setActive} />}
+      {active && <Components.EditStock setActive={setActive} />}
     </div>
   );
 };

@@ -1,131 +1,140 @@
 import React from 'react'
-import { API } from '../../api'
 import { useNavigate } from 'react-router-dom'
+import { API } from '../../api'
+
+const th = { border: '1px solid #ccc', padding: 10, textAlign: 'left' }
+const td = { border: '1px solid #eee', padding: 10 }
 
 const Kassa = () => {
-  const [cart, setCart] = React.useState([])
+  const [cart, setCart]   = React.useState([])
   const [goods, setGoods] = React.useState([])
-  const [paymentType, setPaymentType] = React.useState('cash')
-  const inputRef = React.useRef()
+  const [payment, setPay] = React.useState('cash')
+  const navigate          = useNavigate()
+  const inputRef          = React.useRef()
 
-  const total = cart.reduce(
-    (sum, item) => sum + parseFloat(item.price) * item.qty, 0
-  )
+  const total = cart.reduce((s, i) => s + i.qty * +i.price, 0)
 
-  const Navigate = useNavigate()
-
+  /* ───────── Загрузка ассортимента ───────── */
   React.useEffect(() => {
     API.getStocks()
-      .then(res => setGoods(res.data))
-      .catch(err => console.error('Ошибка загрузки товаров:', err))
+      .then(r => setGoods(r.data))
+      .catch(e => console.error('Ошибка загрузки товаров', e))
   }, [])
 
-  const handleScan = (e) => {
+  /* ───────── Сканирование ───────── */
+  const handleScan = e => {
     if (e.key !== 'Enter') return
     const code = e.target.value.trim()
     if (!code) return
-
     const item = goods.find(g => g.code === code)
-    if (!item) {
-      alert('Товар не найден')
-      e.target.value = ''
-      return
-    }
+    if (!item) { alert('Товар не найден'); e.target.value = ''; return }
 
     setCart(prev => {
-      const existing = prev.find(p => p.id === item.id)
-      return existing
-        ? prev.map(p =>
-            p.id === item.id ? { ...p, qty: p.qty + 1 } : p
-          )
+      const ex = prev.find(p => p.id === item.id)
+      return ex
+        ? prev.map(p => p.id === item.id ? { ...p, qty: p.qty + 1 } : p)
         : [...prev, { ...item, qty: 1 }]
     })
     e.target.value = ''
   }
 
+  /* ───────── Изменение количества ───────── */
+  const changeQty = (idx, delta) =>
+    setCart(prev =>
+      prev.map((r, i) =>
+        i === idx ? { ...r, qty: Math.max(1, r.qty + delta) } : r
+      ))
+
+  const setQtyManually = (idx, val) =>
+    setCart(prev =>
+      prev.map((r, i) =>
+        i === idx ? { ...r, qty: Math.max(1, parseInt(val) || 1) } : r
+      ))
+
+  /* ───────── Удаление позиции ───────── */
+  const removeItem = idx =>
+    setCart(prev => prev.filter((_, i) => i !== idx))
+
+  /* ───────── Продажа ───────── */
   const handleSell = async () => {
-  if (!cart.length) return alert('Корзина пуста')
-
-  try {
-    const payload = {
-      total: total.toFixed(2),
-      payment_type: paymentType,
-      items: cart.map(i => ({
-        code: i.code,
-        name: i.name,
-        price: +i.price,
-        quantity: i.qty,
-        total: (+i.price * i.qty).toFixed(2)
-      }))
+    if (!cart.length) return alert('Корзина пуста')
+    try {
+      const payload = {
+        total: total.toFixed(2),
+        payment_type: payment,
+        items: cart.map(i => ({
+          code: i.code, name: i.name, price: +i.price,
+          quantity: i.qty,
+          total: (+i.price * i.qty).toFixed(2)
+        }))
+      }
+      const res = await API.createSale(payload)
+      localStorage.setItem('receipt', JSON.stringify(res.data))
+      setCart([])
+      navigate('/receipt')
+    } catch (e) {
+      console.error('Ошибка при продаже', e)
+      alert('Ошибка при продаже')
     }
-
-    const res = await API.createSale(payload)   // ← backend вернёт чек
-    localStorage.setItem('receipt', JSON.stringify(res.data))   // 👈
-
-    setCart([])
-    Navigate('/receipt')                         // 👈 переход
-  } catch (err) {
-    console.error('Ошибка при продаже:', err)
-    alert('Ошибка при продаже')
   }
-}
 
+  /* ───────── UI ───────── */
   return (
-    <div style={{
-      padding: 24,
-      maxWidth: 800,
-      margin: '0 auto',
-      fontFamily: 'sans-serif'
-    }}>
+    <div style={{ padding: 24, maxWidth: 900, margin: '0 auto', fontFamily: 'sans-serif' }}>
       <h2>🧾 Касса</h2>
 
       <input
-        type="text"
-        placeholder="Сканируйте штрихкод..."
-        onKeyDown={handleScan}
         ref={inputRef}
+        placeholder="Сканируйте штрихкод…"
+        onKeyDown={handleScan}
         autoFocus
-        style={{
-          width: '100%',
-          padding: 12,
-          fontSize: 16,
-          marginBottom: 20
-        }}
+        style={{ width: '100%', padding: 12, fontSize: 16, marginBottom: 20 }}
       />
 
       <div style={{ marginBottom: 20 }}>
         <label>Тип оплаты: </label>
-        <select
-          value={paymentType}
-          onChange={e => setPaymentType(e.target.value)}
-          style={{ padding: 6, marginLeft: 8 }}
-        >
+        <select value={payment} onChange={e => setPay(e.target.value)} style={{ padding: 6, marginLeft: 8 }}>
           <option value="cash">Наличные</option>
           <option value="card">Карта</option>
         </select>
       </div>
 
-      <table style={{
-        width: '100%',
-        borderCollapse: 'collapse',
-        marginBottom: 20
-      }}>
-        <thead style={{ backgroundColor: '#f0f0f0' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 20 }}>
+        <thead style={{ background: '#f0f0f0' }}>
           <tr>
-            <th style={thStyle}>Наименование</th>
-            <th style={thStyle}>Цена</th>
-            <th style={thStyle}>Кол-во</th>
-            <th style={thStyle}>Сумма</th>
+            <th style={th}>Название</th>
+            <th style={th}>Цена</th>
+            <th style={th}>Кол-во</th>
+            <th style={th}>Сумма</th>
+            <th style={th}></th>{/* столбец для удаления */}
           </tr>
         </thead>
         <tbody>
-          {cart.map((item, idx) => (
+          {cart.map((it, idx) => (
             <tr key={idx}>
-              <td style={tdStyle}>{item.name}</td>
-              <td style={tdStyle}>{parseFloat(item.price)} сом</td>
-              <td style={tdStyle}>{item.qty}</td>
-              <td style={tdStyle}>
-                {(parseFloat(item.price) * item.qty).toFixed(2)} сом
+              <td style={td}>{it.name}</td>
+              <td style={td}>{(+it.price).toFixed(2)} сом</td>
+
+              {/* Кол-во */}
+              <td style={td}>
+                <button onClick={() => changeQty(idx, -1)} style={btn}>−</button>
+                <input
+                  type="number" min={1}
+                  value={it.qty}
+                  onChange={e => setQtyManually(idx, e.target.value)}
+                  style={{ width: 50, textAlign: 'center' }}
+                />
+                <button onClick={() => changeQty(idx, +1)} style={btn}>+</button>
+                <div style={{ fontSize: 11, color: '#888' }}>
+                  Остаток: {it.quantity - it.qty}
+                </div>
+              </td>
+
+              <td style={td}>{(it.qty * +it.price).toFixed(2)} сом</td>
+
+              {/* Кнопка удаления */}
+              <td style={td}>
+                <button onClick={() => removeItem(idx)} style={delBtn}>×</button>
               </td>
             </tr>
           ))}
@@ -135,30 +144,26 @@ const Kassa = () => {
       <h3 style={{ textAlign: 'right' }}>Итого: {total.toFixed(2)} сом</h3>
 
       <div style={{ textAlign: 'right' }}>
-        <button onClick={handleSell} style={{
-          backgroundColor: '#27ae60',
-          color: '#fff',
-          padding: '10px 20px',
-          fontSize: 16,
-          border: 'none',
-          cursor: 'pointer'
-        }}>
-          ✅ Продать
-        </button>
+        <button onClick={handleSell} style={sellBtn}>✅ Продать</button>
       </div>
     </div>
   )
 }
 
-const thStyle = {
-  border: '1px solid #ccc',
-  padding: 10,
-  textAlign: 'left'
+/* ───────── Styles ───────── */
+const btn = {
+  width: 28, height: 28, margin: '0 4px',
+  border: '1px solid #ccc', background: '#fff', cursor: 'pointer'
 }
 
-const tdStyle = {
-  border: '1px solid #eee',
-  padding: 10
+const delBtn = {
+  ...btn,
+  width: 30, background: '#ff4d4f', color: '#fff', border: 'none'
+}
+
+const sellBtn = {
+  background: '#27ae60', color: '#fff',
+  padding: '10px 20px', fontSize: 16, border: 'none', cursor: 'pointer'
 }
 
 export default Kassa

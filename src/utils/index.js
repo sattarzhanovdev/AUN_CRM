@@ -1,4 +1,5 @@
 import { Pages } from "../pages"
+import CodePrint from "../pages/codes-print"
 import Receipt from "../pages/receipt"
 
 export const NavList = [
@@ -26,6 +27,11 @@ export const NavList = [
     id: 5,
     title: 'Касса',
     route: '/kassa'
+  },
+  {
+    id: 6,
+    title: 'Штрих коды',
+    route: '/codes'
   }
 ]
 
@@ -93,5 +99,15 @@ export const PUBLIC_ROUTES = [
     id: 8,
     page: <Receipt />,
     route: '/receipt'
+  }, 
+  {
+    id: 9,
+    page: <Pages.Codes />,
+    route: '/codes'
+  }, 
+  {
+    id: 10,
+    page: <CodePrint />,
+    route: '/codes-print/:code/:name/:price/'
   }
 ]
