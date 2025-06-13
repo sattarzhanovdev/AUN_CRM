@@ -3,7 +3,7 @@ import { Components } from '../../components'
 const Storage = () => {
   return (
     <div>
-      <Components.StockReport />
+      {/* <Components.StockReport /> */}
       <Components.StockTable />
     </div>
   )

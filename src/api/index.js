@@ -1,4 +1,5 @@
 import axios from "axios";
+import { get } from "react-hook-form";
 
 export const API = {
   // getClients: () => axios.get('/clients/clients/'),
@@ -24,9 +25,10 @@ export const API = {
   updateTransaction: (id, data) => axios.put(`/transactions/${id}/`, data),
   deleteTransaction: (id) => axios.delete(`/transactions/${id}/`),
   getStocks: () => axios.get('/stocks/'),
+  getCategories: () => axios.get('/categories/'),
   postStock: (data) => axios.post('/stocks/', data),
   getStockByCode: (code) => axios.get(`/stocks/?code=${code}`), // или другой эндпоинт
-updateStockQuantity: (id, body) =>
-    axios.put(`/stocks/${id}/`, body), 
-createSale: (data) => axios.post('/sales/', data),
+  updateStockQuantity: (id, body) => axios.put(`/stocks/${id}/`, body), 
+  createSale: (data) => axios.post('/sales/', data),
+  getSales: () => axios.get('/sales/')
 }

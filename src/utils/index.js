@@ -1,4 +1,5 @@
 import { Pages } from "../pages"
+import Receipt from "../pages/receipt"
 
 export const NavList = [
   {
@@ -87,5 +88,10 @@ export const PUBLIC_ROUTES = [
     id: 7,
     page: <Pages.Kassa />,
     route: '/kassa'
+  }, 
+  {
+    id: 8,
+    page: <Receipt />,
+    route: '/receipt'
   }
 ]

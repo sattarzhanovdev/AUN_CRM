@@ -10,6 +10,7 @@ const MainReport = () => {
     monthly_profit: 0,
     monthly_clients: 0
   })
+  const [benefit, setBenefit] = React.useState(0)
 
   React.useEffect(() => {
     API.getTransactions()
@@ -48,6 +49,10 @@ const MainReport = () => {
       .catch(err => {
         console.error('Ошибка загрузки:', err)
       })
+    API.getSales()
+      .then(res => 
+        setBenefit(res.data.reduce((a, b) => Number(a)+Number(b.total), 0)) // для отладки, можно убрать позже
+      )
   }, [])
 
   return (
@@ -58,7 +63,7 @@ const MainReport = () => {
           <h3>Оборота за месяц/Прибыль</h3>
         </div>
         <div className={c.down}>
-          <h1>{data.monthly_income} / {data.monthly_profit}</h1>
+          <h1>{benefit} / {benefit-data.monthly_expense}</h1>
           <button>Посмотреть</button>
         </div>
       </div>
@@ -72,7 +77,7 @@ const MainReport = () => {
           <button>Посмотреть</button>
         </div>
       </div>
-      <div className={c.card}>
+      {/* <div className={c.card}>
         <div className={c.up}>
           <img src={Icons.document} alt="document" />
           <h3>Клиентов за месяц</h3>
@@ -81,7 +86,7 @@ const MainReport = () => {
           <h1>{data.monthly_clients}</h1>
           <button>Посмотреть</button>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

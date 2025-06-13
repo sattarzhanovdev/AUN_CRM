@@ -15,11 +15,9 @@ const FinancesTable = () => {
   }, [])
 
   React.useEffect(() => {
-    API.getTransactions()
+    API.getSales()
       .then(res => {
-        const incomes = res.data.filter(tx => tx.type === 'income')
-        const sorted = incomes.sort((a, b) => new Date(b.date) - new Date(a.date))
-        setData(sorted)
+        setData(res.data)
       })
       .catch(err => console.error('Ошибка загрузки транзакций:', err))
   }, [])
@@ -38,8 +36,8 @@ const FinancesTable = () => {
           <thead>
             <tr>
               <th>Время</th>
-              <th>Наименование</th>
-              <th>Количество</th>
+              {/* <th>Наименование</th> */}
+              {/* <th>Количество</th> */}
               <th>
                 Прайс по итогу
                 <button onClick={() => setActive(true)}>
@@ -56,9 +54,10 @@ const FinancesTable = () => {
                     {formatDate(item.date)}
                   </div>
                 </td>
-                <td>{item.name}</td>
-                <td>{item.quantity || 1}</td>
-                <td>{item.amount} сом</td>
+                {/* <td>{item.name}</td> */}
+                {/* <td>{item.quantity}</td> */}
+                <td>{item.total} сом</td>
+                <td>{item.payment_type === 'cash' ? 'Наличными' : 'Картой'}</td>
               </tr>
             ))}
           </tbody>
