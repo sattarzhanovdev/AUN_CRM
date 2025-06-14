@@ -1,161 +1,57 @@
-
+/* -------- печатная страница -------- */
 @page {
-  width: 80mm;
-  margin: 0;
+  size: 80mm autoç;   /* ширина рулона, высота по содержимому  */
+  margin: 0;         /* без полей                             */
 }
 
-#invoicePos{
-  box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
-  padding:2mm;
+/* -------- базовые стили чека (видим и на экране) -------- */
+#invoicePos {
+  width: 80mm;          /* строго ширина рулона               */
   margin: 0 auto;
-  width: 105mm;
-  background: #FFF;
-  position: absolute;
-  left: 0;
+  background: #fff;
+  padding: 5mm;         /* небольшие внутренние отступы       */
+  box-shadow: none;
+  position: fixed;
   top: 0;
-  
-  .back{
-    position: absolute;
-    top: 50%;
-    left: 120mm;
-    width: 35px;
-    height: 35px;
-    background: #222;
-    color: white;
-    border-radius: 10px;
-    border: 0;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
+  /* … твоя внутренняя сетка и шрифты … */
+  h1 { font-size: 12px; color:#222; }
+  h2, h3 { font-size: 14px; }
+  p  { font-size: 12px; line-height: 1.2em; color:#666; }
 
-  .print{
-    position: absolute;
-    top: 50%;
-    left: 140mm;
-    width: 35px;
-    height: 35px;
-    background: #222;
-    color: white;
-    border-radius: 10px;
-    border: 0;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-  
-::selection {background: #f31544; color: #FFF;}
-::moz-selection {background: #f31544; color: #FFF;}
-h1{
-  color: #222;
-  font-size: 16px;
-}
-h2{font-size: 16px;}
-h3{
-  font-size: 16px;
-  font-weight: bolder;
-  line-height: 2em;
-}
-p{
-  font-size: 16px;
-  color: #666;
-  font-weight: bolder;
+  table         { width: 100%; border-collapse: collapse; }
+  .tabletitle   { font-size: .5em; background:#eee;
+                  display:flex; justify-content:space-between;
+                  border-bottom: 1px solid #000; }
 
-  line-height: 1.2em;
-}
- 
-#top, #mid,#bot{ /* Targets all id with 'col-' */
-  border-bottom: 1px solid #EEE;
-}
+  .service      { border-bottom: 1px solid #eee;
+                  display:flex; justify-content: space-between; 
+                  font-size: 12px; }
+  .service div  { width:45%; display:flex; justify-content:space-between; }
+  .tableitem    { font-size: 14px; padding: 14px 0; }
 
-#top{min-height: 100px;}
-#mid{min-height: 80px;} 
-#bot{ min-height: 50px;}
+  .itemtext     { font-size: 16px; color:#000; }
 
-#top .logo{
-  //float: left;
-	height: 60px;
-	width: 60px;
-	background: url(http://michaeltruong.ca/images/logo1.png) no-repeat;
-	background-size: 60px 60px;
-}
-.clientlogo{
-  float: left;
-	height: 60px;
-	width: 60px;
-	background: url(http://michaeltruong.ca/images/client.jpg) no-repeat;
-	background-size: 60px 60px;
-  border-radius: 50px;
-}
-.info{
-  display: block;
-  //float:left;
-  margin-left: 0;
-}
-.title{
-  float: right;
-}
-.title p{text-align: right;} 
-table{
-  width: 100%;
-  border-collapse: collapse;
-}
-td{
-  //padding: 5px 0 5px 15px;
-  //border: 1px solid #EEE
-}
-.tabletitle{
-  //padding: 5px;
-  font-size: .5em;
-  background: #EEE;
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid black;
-
-}
-
-#total{
-  border-top: 1px solid black;
-  border-bottom: none;
-}
-
-#service{
-  border-top: 1px solid black;
-  border-bottom: none;
-  padding-bottom: 250px;
-  td{
-    font-size: 16px;
-    font-weight: bold;
+  /* кнопки только для экрана */
+  .back, .print {
+    position: fixed;
+    width: 35px; height: 35px;
+    background:#222; color:#fff; border-radius:10px; border:0;
+    font-size:18px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
   }
 }
-.service{
-  border-bottom: 1px solid #EEE;
-  display: flex;
-  justify-content: space-between;
-  font-size: 24px;
-  
-  div{
-    width: 45%;
-    display: flex;
-    justify-content: space-between;
-    
-  }
-  .tableitem{
-    font-size: 16px;
-    padding: 16px 0;
-  }
-}
-.item{width: 24mm;}
-.itemtext{font-size: 16px; color: black;}
 
-#legalcopy{
-  margin-top: 5mm;
-}
+/* -------- печатные правки -------- */
+@media print {
 
-  
-  
+  /* прячем всё, кроме чека */
+  body *        { visibility: hidden !important; }
+  #invoicePos,
+  #invoicePos * { visibility: visible !important; }
+
+  /* центрируем чек в документе */
+  #invoicePos   { margin: 0; }
+
+  /* прячем кнопки */
+  .back, .print { display: none !important; }
 }
