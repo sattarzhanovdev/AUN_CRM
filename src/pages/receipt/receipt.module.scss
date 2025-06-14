@@ -1,57 +1,139 @@
-/* -------- печатная страница -------- */
+/* === Параметры печатной страницы === */
 @page {
-  size: 90mm autoç;   /* ширина рулона, высота по содержимому  */
-  margin: 0;         /* без полей                             */
+  size: 80mm auto;   /* ширина рулона, высота по содержимому */
+  margin: 0;         /* убираем поля */
 }
 
-/* -------- базовые стили чека (видим и на экране) -------- */
+/* === Обёртка чека === */
 #invoicePos {
-  width: 90mm;          /* строго ширина рулона               */
+  width: 80mm;
   margin: 0 auto;
   background: #fff;
-  padding: 5mm;         /* небольшие внутренние отступы       */
+  padding: 5mm;
   box-shadow: none;
   position: fixed;
   top: 0;
-  /* … твоя внутренняя сетка и шрифты … */
-  h1 { font-size: 14px; color:#222; }
-  h2, h3 { font-size: 14px; }
-  p  { font-size: 14px; line-height: 1.2em; color:#666; }
-
-  table         { width: 100%; border-collapse: collapse; }
-  .tabletitle   { font-size: 14px; background:#eee;
-                  display:flex; justify-content:space-between;
-                  border-bottom: 1px solid #000; }
-
-  .service      { border-bottom: 1px solid #eee;
-                  display:flex; justify-content: space-between; 
-                  font-size: 14px; }
-  .service div  { width:45%; display:flex; justify-content:space-between; }
-  .tableitem    { font-size: 14px; padding: 14px 0; }
-
-  .itemtext     { font-size: 14px; color:#000; }
-
-  /* кнопки только для экрана */
-  .back, .print {
-    position: fixed;
-    width: 35px; height: 35px;
-    background:#222; color:#fff; border-radius:10px; border:0;
-    font-size:18px; display:flex; align-items:center; justify-content:center;
-    cursor:pointer;
-  }
+  left: 0;
+  font-family: 'Arial', sans-serif;
 }
 
-/* -------- печатные правки -------- */
+/* === Заголовки === */
+#invoicePos h1 {
+  font-size: 14px;
+  color: #222;
+  text-align: center;
+  margin-bottom: 10px;
+}
+#invoicePos h2,
+#invoicePos h3 {
+  font-size: 13px;
+  margin: 0;
+}
+
+/* === Параграфы и текст === */
+#invoicePos p {
+  font-size: 12px;
+  line-height: 1.2em;
+  color: #333;
+  margin: 4px 0;
+}
+
+/* === Таблица чеков === */
+#invoicePos table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.tabletitle {
+  font-size: 12px;
+  background: #eee;
+  font-weight: bold;
+  padding: 5px 0;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #000;
+}
+
+.service {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  border-bottom: 1px solid #ddd;
+  padding: 6px 0;
+}
+
+.service div {
+  width: 45%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.tableitem {
+  font-size: 12px;
+  padding: 10px 0;
+}
+
+.itemtext {
+  font-size: 13px;
+  color: #000;
+}
+
+/* === Итого === */
+#invoicePos #total {
+  border-top: 1px solid #000;
+  font-size: 13px;
+  margin-top: 10px;
+  padding-top: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* === Кнопки (только для экрана) === */
+.back, .print {
+  position: fixed;
+  bottom: 10mm;
+  right: 10mm;
+  width: 35px;
+  height: 35px;
+  background: #222;
+  color: white;
+  border-radius: 10px;
+  border: 0;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+}
+
+.print{
+  width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* === Правки для печати === */
 @media print {
+  body * {
+    visibility: hidden !important;
+  }
 
-  /* прячем всё, кроме чека */
-  body *        { visibility: hidden !important; }
   #invoicePos,
-  #invoicePos * { visibility: visible !important; }
+  #invoicePos * {
+    visibility: visible !important;
+  }
 
-  /* центрируем чек в документе */
-  #invoicePos   { margin: 0; }
+  #invoicePos {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+  }
 
-  /* прячем кнопки */
-  .back, .print { display: none !important; }
+  .back, .print {
+    display: none !important;
+  }
 }

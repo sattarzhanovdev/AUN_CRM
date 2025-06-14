@@ -57,7 +57,7 @@ const Receipt = () => {
           <IoIosArrowRoundBack />
         </button>
         <button className={c.print} onClick={() => window.print()}>
-          <BiPrinter />
+          Распечатать чек <BiPrinter />
         </button>
       </div>
     </div>

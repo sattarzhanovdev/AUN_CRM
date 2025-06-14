@@ -34,7 +34,7 @@ const CodePrint = () => {
           onChange={e => setQty(+e.target.value || 1)}
         />
         <button onClick={() => window.print()}>
-          <BiPrinter />
+          Распечатать чек <BiPrinter />
         </button>
       </div>
     </div>
