@@ -78,7 +78,7 @@ const StockTable = () => {
                 <tr key={item.id}>
                   <td><img src={Icons.edit} alt="edit" onClick={() => {
                     localStorage.setItem('editStock', JSON.stringify(item))
-                    setActive(true)
+                    setEditActive(true)
                   }}/></td>
                   <td>{item.name}</td>
                   <td>{item.fixed_quantity}</td>
@@ -97,7 +97,8 @@ const StockTable = () => {
         </table>
       </div>
 
-      {active && <Components.EditStock setActive={setActive} />}
+      {editActive && <Components.EditStock setActive={setActive} />}
+      {active && <Components.AddStock setActive={setActive} />}
     </div>
   );
 };
