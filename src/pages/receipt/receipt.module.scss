@@ -1,12 +1,12 @@
 /* -------- печатная страница -------- */
 @page {
-  size: 80mm autoç;   /* ширина рулона, высота по содержимому  */
+  size: 90mm autoç;   /* ширина рулона, высота по содержимому  */
   margin: 0;         /* без полей                             */
 }
 
 /* -------- базовые стили чека (видим и на экране) -------- */
 #invoicePos {
-  width: 80mm;          /* строго ширина рулона               */
+  width: 90mm;          /* строго ширина рулона               */
   margin: 0 auto;
   background: #fff;
   padding: 5mm;         /* небольшие внутренние отступы       */
@@ -14,22 +14,22 @@
   position: fixed;
   top: 0;
   /* … твоя внутренняя сетка и шрифты … */
-  h1 { font-size: 12px; color:#222; }
+  h1 { font-size: 14px; color:#222; }
   h2, h3 { font-size: 14px; }
-  p  { font-size: 12px; line-height: 1.2em; color:#666; }
+  p  { font-size: 14px; line-height: 1.2em; color:#666; }
 
   table         { width: 100%; border-collapse: collapse; }
-  .tabletitle   { font-size: .5em; background:#eee;
+  .tabletitle   { font-size: 14px; background:#eee;
                   display:flex; justify-content:space-between;
                   border-bottom: 1px solid #000; }
 
   .service      { border-bottom: 1px solid #eee;
                   display:flex; justify-content: space-between; 
-                  font-size: 12px; }
+                  font-size: 14px; }
   .service div  { width:45%; display:flex; justify-content:space-between; }
   .tableitem    { font-size: 14px; padding: 14px 0; }
 
-  .itemtext     { font-size: 16px; color:#000; }
+  .itemtext     { font-size: 14px; color:#000; }
 
   /* кнопки только для экрана */
   .back, .print {

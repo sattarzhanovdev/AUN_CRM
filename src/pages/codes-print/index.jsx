@@ -1,46 +1,42 @@
-import React from 'react'
-import Barcode from 'react-barcode';
-import { set } from 'react-hook-form';
-import { BiPrinter } from 'react-icons/bi';
-import { useLocation, useParams } from 'react-router-dom'
+import React, { useState } from 'react'
+import Barcode from 'react-barcode'
+import { BiPrinter } from 'react-icons/bi'
+import { useParams } from 'react-router-dom'
+import './code-print.css'               // ⬅️ стили ниже
 
 const CodePrint = () => {
-  const {code, name, price} = useParams()
-  const [ count, setCount ] = React.useState(1)
-  const items = []
-  
-  const changeCount = (e) => {
-    setCount(e.target.value)
-  }
-  for(let i = 0; i < count; i++) {
-    items.push(i)
-  }
+  const { code, name, price } = useParams()
+  const [qty, setQty] = useState(1)
+
+  const labels = Array.from({ length: qty })
 
   return (
-    <div style={{display: 'flex', flexWrap: 'wrap', gap: '10px', width: '100%'}}>
-      {
-        items.map(() => <div
-        style={{
-          width: "300px",
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          border: '1px solid #000',
-          padding: '10px',
-          marginBottom: '10px'
-        }}
-      >
-        <h3 style={{margin: 0}}>{name}</h3>
-        <p style={{margin: 0}}>Стоимость: {price} сом</p>
-        <Barcode value={code} width={1} height={50} fontSize={12}/>
-      </div>)
-      }
+    <div className="label-wrapper">
+      {labels.map((_, i) => (
+        <div key={i} className="label">
+          <h3>{name}</h3>
+          <p>Стоимость: {price} сом</p>
+          <Barcode
+            value={code}
+            width={1}
+            height={30}      /* подгоняй под рулон */
+            fontSize={10}
+            margin={0}
+          />
+        </div>
+      ))}
 
-      <input type="number" onChange={e => changeCount(e)} />
-      <button onClick={() => window.print()}>
-        <BiPrinter />
-      </button>
+      <div className="controls">
+        <input
+          type="number"
+          min="1"
+          value={qty}
+          onChange={e => setQty(+e.target.value || 1)}
+        />
+        <button onClick={() => window.print()}>
+          <BiPrinter />
+        </button>
+      </div>
     </div>
   )
 }
