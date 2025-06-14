@@ -1,64 +1,99 @@
-import React from 'react'
-import Barcode from 'react-barcode'
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import Barcode       from 'react-barcode'
+import { useNavigate } from 'react-router-dom'
+import { API }        from '../../api'      // твой axios-клиент
 
 const Codes = () => {
-  const [ barcodeValue, setBarcodeValue ] = React.useState('')
-  const [ name, setName ] = React.useState('')
-  const [ price, setPrice ] = React.useState('')
-  
-  function generateBarcode(length = 13) {
-    let barcode = '';
-    while (barcode.length < length) {
-      barcode += Math.floor(Math.random() * 10); // добавляет цифру от 0 до 9
+  const [name,  setName]  = useState('')
+  const [price, setPrice] = useState('')
+  const [code,  setCode]  = useState('')
+  const [stock, setStock] = useState([])    // ← весь склад
+  const navigate = useNavigate()
+
+  /* ───────── 1. подгружаем весь склад один раз ───────── */
+  useEffect(() => {
+    API.getStocks()                         // GET /stocks/
+      .then(res => setStock(res.data))
+      .catch(err => console.error('Ошибка загрузки склада', err))
+  }, [])
+
+  /* ───────── генератор нового кода ───────── */
+  const genCode = (len = 13) =>
+    Array.from({ length: len }, () => Math.floor(Math.random() * 10)).join('')
+
+  /* ───────── проверка / генерация ───────── */
+  const findOrMakeCode = () => {
+    if (!name.trim()) return alert('Введите название товара')
+
+    /* ищем по регистру без учёта */
+    const found = stock.find(
+      item => item.name.toLowerCase().trim() === name.toLowerCase().trim()
+    )
+
+    if (found) {
+      setCode(found.code)
+    } else {
+      setCode(genCode())
     }
-    return barcode;
   }
 
-  const handleBarcodeChange = (e) => {
-    setBarcodeValue(generateBarcode())
-    localStorage.setItem('values', JSON.stringify({name: name, price: price, barcode: barcodeValue}))
-  }
-
-  const Navigate = useNavigate()
-
+  /* ───────── UI ───────── */
   return (
-    <div>
-      <input 
-        type="text" 
-        placeholder='Наименование товара' 
-        onChange={e => setName(e.target.value)} 
-        style={{width: '200px', height: '40px'}}
+    <div style={{ padding: 20 }}>
+      <input
+        type="text"
+        placeholder="Наименование товара"
+        value={name}
+        onChange={e => setName(e.target.value)}
+        style={{ width: 200, height: 40 }}
       />
-      <input 
-        type="number" 
-        placeholder='Стоимость товара' 
-        onChange={e => setPrice(e.target.value)}  
-        style={{width: '200px', height: '40px', marginLeft: '20px'}}
+
+      <input
+        type="number"
+        placeholder="Стоимость товара"
+        value={price}
+        onChange={e => setPrice(e.target.value)}
+        style={{ width: 200, height: 40, marginLeft: 20 }}
       />
-      <button 
-        onClick={() => handleBarcodeChange()} 
-        style={{width: '200px', height: '46px', marginLeft: '20px', background: '#216EFD', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '5px'}}
+
+      <button
+        onClick={findOrMakeCode}
+        style={btn('#216EFD')}
       >
-        Сгенерировать
+        Проверить / сгенерировать
       </button>
-      <button 
-        onClick={() => Navigate(`/codes-print/${barcodeValue}/${name}/${price}`)} 
-        style={{width: '200px', height: '46px', marginLeft: '20px', background: 'green', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '5px'}}      
+
+      <button
+        disabled={!code}
+        onClick={() =>
+          navigate(`/codes-print/${code}/${encodeURIComponent(name)}/${price}`)
+        }
+        style={btn('green', !code)}
       >
         Распечатать
       </button>
-      <div 
-        style={{
-          width: "300px",
-        }}
-      >
-        <h3>{name}</h3>
-        <h3>Стомость: {price}</h3>
-        <Barcode value={barcodeValue} width={1} height={50} fontSize={12}/>
-      </div>
+
+      {code && (
+        <div style={{ width: 300, marginTop: 20 }}>
+          <h3>{name}</h3>
+          <h3>Стоимость: {price}</h3>
+          <Barcode value={code} width={1} height={50} fontSize={12} />
+        </div>
+      )}
     </div>
   )
 }
+
+/* helper для кнопок */
+const btn = (color, disabled) => ({
+  width: 200,
+  height: 46,
+  marginLeft: 20,
+  background: disabled ? '#ccc' : color,
+  color: '#fff',
+  border: 'none',
+  cursor: disabled ? 'not-allowed' : 'pointer',
+  borderRadius: 5
+})
 
 export default Codes
