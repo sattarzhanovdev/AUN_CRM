@@ -59,3 +59,10 @@
     }
   }
 }
+
+
+@media print {
+  .navbar{
+    display: none;
+  }
+}
