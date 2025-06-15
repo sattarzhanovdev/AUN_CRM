@@ -1,18 +1,19 @@
 /* === Параметры печатной страницы === */
 @page {
-  size: 80mm auto;
-  margin: 0;
+  size: 100mm auto;
 }
+
 
 /* === Обёртка чека === */
 #invoicePos {
-  width: 80mm;
+  width: 100mm;
   margin: 0 auto;
   background: #fff;
   padding: 5mm;
+  margin-left: 50px;
   box-shadow: none;
   font-family: 'Arial', sans-serif;
-  position: static;  /* ← ВАЖНО: убираем fixed */
+  // position: static;  /* ← ВАЖНО: убираем fixed */
 }
 
 /* === Заголовки === */
@@ -24,13 +25,13 @@
 }
 #invoicePos h2,
 #invoicePos h3 {
-  font-size: 13px;
+  font-size: 16px;
   margin: 0;
 }
 
 /* === Параграфы и текст === */
 #invoicePos p {
-  font-size: 12px;
+  font-size: 16px;
   line-height: 1.2em;
   color: #333;
   margin: 4px 0;
@@ -44,7 +45,7 @@
 }
 
 .tabletitle {
-  font-size: 12px;
+  font-size: 16px;
   background: #eee;
   font-weight: bold;
   padding: 5px 0;
@@ -56,7 +57,7 @@
 .service {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 16px;
   border-bottom: 1px solid #ddd;
   padding: 6px 0;
 }
@@ -68,19 +69,19 @@
 }
 
 .tableitem {
-  font-size: 12px;
+  font-size: 16px;
   padding: 10px 0;
 }
 
 .itemtext {
-  font-size: 13px;
+  font-size: 16px;
   color: #000;
 }
 
 /* === Итого === */
 #invoicePos #total {
   border-top: 1px solid #000;
-  font-size: 13px;
+  font-size: 16px;
   margin-top: 10px;
   padding-top: 5px;
   display: flex;
@@ -129,8 +130,9 @@
   #invoicePos {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 75px;
     margin: 0;
+    transform: rotate(180deg);
   }
 
   .back, .print {

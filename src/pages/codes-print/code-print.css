@@ -26,13 +26,13 @@
 }
 
 .label h3 {
-  font-size: 16px;
+  font-size: 19px;
   margin: 0;
   line-height: 1.2;
 }
 
 .label p {
-  font-size: 14px;
+  font-size: 17px;
   margin: 4px 0 6px;
 }
 
@@ -50,9 +50,10 @@
 @media print {
   body {
     transform: rotate(90deg);
-    position: absolute;
+    /* position: absolute;
     top: 0;
-    left: 0;
+    left: 0; */
+    
   }
   body * {
     visibility: hidden !important;
