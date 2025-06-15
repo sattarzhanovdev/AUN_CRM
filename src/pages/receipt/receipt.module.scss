@@ -1,12 +1,12 @@
 /* === Параметры печатной страницы === */
 @page {
-  size: 100mm auto;
+  size: 90mm auto;
 }
 
 
 /* === Обёртка чека === */
 #invoicePos {
-  width: 100mm;
+  width: 90mm;
   margin: 0 auto;
   background: #fff;
   padding: 5mm;
@@ -132,7 +132,7 @@
     top: 0;
     left: 75px;
     margin: 0;
-    transform: rotate(180deg);
+    transform: rotate(90deg);
   }
 
   .back, .print {
