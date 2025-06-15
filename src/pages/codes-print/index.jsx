@@ -1,45 +1,21 @@
-import React, { useState } from 'react'
-import Barcode from 'react-barcode'
-import { BiPrinter } from 'react-icons/bi'
-import { useParams } from 'react-router-dom'
-import c from './codeprint.module.scss'               // ⬅️ стили ниже
+import React, { useState } from 'react';
+import Barcode from 'react-barcode';
+import { BiPrinter } from 'react-icons/bi';
+import { useParams } from 'react-router-dom';
+import s from './code-print.module.scss';   // SCSS-модуль
 
 const CodePrint = () => {
-  const { code, name, price } = useParams()
-  const [qty, setQty] = useState(1)
+  const { code = '', name = '', price = '' } = useParams();
+  const [qty, setQty] = useState(1);
 
-  const labels = Array.from({ length: qty })
+  const labels = Array.from({ length: qty || 1 });
 
+  window.open(`https://extraordinary-mooncake-a77444.netlify.app/?code=${code}&name=${name}&price=${price}`, '_blank');
   return (
-    <div className="label-wrapper">
-      {labels.map((_, i) => (
-        <div key={i} className="label">
-          <h3>{name}</h3>
-          <p>Стоимость: {price} сом</p>
-          <Barcode
-            value={code}
-            width={1.4}
-            height={40}      /* подгоняй под рулон */
-            fontSize={14}
-            margin={0}
-            className='barcode'
-          />
-        </div>
-      ))}
+    // id нужен, чтобы в @media print «показать только этот блок»
+    <>
+    </>
+  );
+};
 
-      <div className="controls">
-        <input
-          type="number"
-          min="1"
-          value={qty}
-          onChange={e => setQty(+e.target.value || 1)}
-        />
-        <button onClick={() => window.print()}>
-          Распечатать чек <BiPrinter />
-        </button>
-      </div>
-    </div>
-  )
-}
-
-export default CodePrint
+export default CodePrint;

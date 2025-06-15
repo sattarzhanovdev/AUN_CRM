@@ -120,6 +120,7 @@
     visibility: hidden !important;
     padding: 0;
     margin: 0;
+    
   }
 
   body{
@@ -139,7 +140,7 @@
     position: absolute;
     inset: 0;        /* убираем все смещения */
     margin: 0 auto;  /* центрируем по горизонтали */
-    transform: rotate(-90deg);
+    transform: rotate(0);
   }
 
   .back, .print {
