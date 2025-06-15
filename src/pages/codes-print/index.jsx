@@ -20,7 +20,7 @@ const CodePrint = () => {
             value={code}
             width={1.4}
             height={40}      /* подгоняй под рулон */
-            fontSize={10}
+            fontSize={14}
             margin={0}
           />
         </div>
