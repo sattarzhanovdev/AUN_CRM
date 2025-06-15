@@ -48,6 +48,9 @@
 
 /* Только печать: убираем всё лишнее */
 @media print {
+  body {
+    transform: rotate(90deg);
+  }
   body * {
     visibility: hidden !important;
   }
