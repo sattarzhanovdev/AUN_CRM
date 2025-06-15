@@ -1,7 +1,7 @@
 /* === Параметры печатной страницы === */
 @page {
-  size: 80mm auto;   /* ширина рулона, высота по содержимому */
-  margin: 0;         /* убираем поля */
+  size: 80mm auto;
+  margin: 0;
 }
 
 /* === Обёртка чека === */
@@ -11,10 +11,8 @@
   background: #fff;
   padding: 5mm;
   box-shadow: none;
-  position: fixed;
-  top: 0;
-  left: 0;
   font-family: 'Arial', sans-serif;
+  position: static;  /* ← ВАЖНО: убираем fixed */
 }
 
 /* === Заголовки === */
@@ -108,17 +106,19 @@
   z-index: 999;
 }
 
-.print{
+.print {
   width: 200px;
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-/* === Правки для печати === */
+/* === Печатный режим === */
 @media print {
   body * {
     visibility: hidden !important;
+    padding: 0;
+    margin: 0;
   }
 
   #invoicePos,
