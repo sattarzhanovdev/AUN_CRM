@@ -139,8 +139,7 @@
     position: absolute;
     inset: 0;        /* убираем все смещения */
     margin: 0 auto;  /* центрируем по горизонтали */
-    transform: rotate(90deg);
-    margin-top: 50px;
+    transform: rotate(-90deg);
   }
 
   .back, .print {
