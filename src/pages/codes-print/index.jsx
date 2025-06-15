@@ -18,8 +18,8 @@ const CodePrint = () => {
           <p>Стоимость: {price} сом</p>
           <Barcode
             value={code}
-            width={1}
-            height={30}      /* подгоняй под рулон */
+            width={1.4}
+            height={40}      /* подгоняй под рулон */
             fontSize={10}
             margin={0}
           />
