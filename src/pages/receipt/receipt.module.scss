@@ -10,7 +10,7 @@
   margin: 0 auto;
   background: #fff;
   padding: 5mm;
-  margin-left: 50px;
+  margin-left: 0;
   box-shadow: none;
   font-family: 'Arial', sans-serif;
   // position: static;  /* ← ВАЖНО: убираем fixed */
@@ -140,6 +140,7 @@
     inset: 0;        /* убираем все смещения */
     margin: 0 auto;  /* центрируем по горизонтали */
     transform: rotate(90deg);
+    margin-top: 50px;
   }
 
   .back, .print {
