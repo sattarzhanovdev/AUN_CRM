@@ -1,5 +1,5 @@
 @page {
-  size: 40mm 60mm; /* ширина 40мм, высота 60мм */
+  size: 50mm 70mm; /* ширина 40мм, высота 60мм */
   margin: 0;
 }
 
@@ -50,6 +50,9 @@
 @media print {
   body {
     transform: rotate(90deg);
+    position: absolute;
+    top: 0;
+    left: 0;
   }
   body * {
     visibility: hidden !important;
