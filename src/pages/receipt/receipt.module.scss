@@ -7,7 +7,7 @@
 /* === Обёртка чека === */
 #invoicePos {
   width: 90mm;
-  margin: 0 auto;
+  margin: 0;
   background: #fff;
   padding: 5mm;
   margin-left: 0;
@@ -120,6 +120,7 @@
     visibility: hidden !important;
     padding: 0;
     margin: 0;
+    height: fit-content;
   }
 
   body{
