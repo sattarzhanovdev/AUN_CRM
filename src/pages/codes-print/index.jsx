@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Barcode from 'react-barcode'
 import { BiPrinter } from 'react-icons/bi'
 import { useParams } from 'react-router-dom'
-import './code-print.css'               // ⬅️ стили ниже
+import c from './codeprint.module.scss'               // ⬅️ стили ниже
 
 const CodePrint = () => {
   const { code, name, price } = useParams()
@@ -22,6 +22,7 @@ const CodePrint = () => {
             height={40}      /* подгоняй под рулон */
             fontSize={14}
             margin={0}
+            className='barcode'
           />
         </div>
       ))}
