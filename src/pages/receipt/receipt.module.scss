@@ -134,11 +134,11 @@
     visibility: visible !important;
   }
 
+  
   #invoicePos {
     position: absolute;
-    top: 0;
-    left: 75px;
-    margin: 0;
+    inset: 0;        /* убираем все смещения */
+    margin: 0 auto;  /* центрируем по горизонтали */
     transform: rotate(90deg);
   }
 
