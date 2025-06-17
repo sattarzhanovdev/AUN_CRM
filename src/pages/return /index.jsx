@@ -115,9 +115,7 @@ const Return = () => {
       <div style={{marginBottom:20}}>
         <label>Причина:&nbsp;</label>
         <select value={reason} onChange={e=>setReason(e.target.value)}>
-          <option value="defect">Дефект</option>
           <option value="customer">Покупатель вернул</option>
-          <option value="expiry">Истёк срок годности</option>
         </select>
       </div>
 
