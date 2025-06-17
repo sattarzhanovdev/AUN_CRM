@@ -123,13 +123,26 @@ const Kassa = () => {
   }
 
   /* ─── открыть / закрыть кассу (как было) ─── */
-  const openKassa = ()=>{ localStorage.setItem('open-kassa',0); nav('/kassa-report')}
+  const openKassa = ()=>{ 
+    API.openKassa(0)  
+      .then(res => {
+        if(res.status === 201){
+          localStorage.setItem('kassa-id', res.data.id); 
+          nav('/kassa-report')
+        }
+      })
+  }
   const closeKassa = ()=>{
     const today = new Date().toISOString().slice(0,10)
     const summa = sales.filter(s=>(s.date||'').slice(0,10)===today)
                        .reduce((t,i)=>t+Number(i.total||0),0)
-    localStorage.setItem('open-kassa',summa.toFixed(2))
-    nav('/kassa-report')
+    const id = localStorage.getItem('kassa-id')
+    API.closeKassa(id, summa)  
+      .then(res => {
+        if(res.status === 200){
+          nav('/kassa-report')
+        }
+      })
   }
 
   /* ─── UI ─── */
@@ -219,7 +232,7 @@ const Kassa = () => {
       </div>
 
       <div style={{textAlign:'right',marginTop:20}}>
-        {localStorage.getItem('open-kassa')
+        {localStorage.getItem('kassa-id')
           ? <button onClick={closeKassa} style={sellBtn}>Закрыть кассу</button>
           : <button onClick={openKassa}  style={sellBtn}>Открыть кассу</button>}
       </div>

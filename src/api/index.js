@@ -34,4 +34,7 @@ export const API = {
   createSale: (data) => axios.post('/sales/', data),
   getSales: () => axios.get('/sales/'), 
   createReturn: (data) => axios.post('/returns/', data),
+  openKassa: (sum) => axios.post('/cash-sessions/open/', { opening_sum: sum }),
+  closeKassa: (sessionId, sum) => axios.post(`/cash-sessions/${sessionId}/close/`, { closing_sum: sum }), 
+  kassaItem: (id) => axios.get(`/cash-sessions/${id}/`),
 }
