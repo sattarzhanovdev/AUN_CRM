@@ -26,7 +26,20 @@ const KassaReport = () => {
   return (
     /* 👇 важно: id статичный, className — из модуля */
     <div id="invoicePos" className={s.invoicePos}>
-      <h3>{Number(sale) > 0 ? 'Закрытие кассы' : 'Открытие кассы'} {`${date.getDate()}.${date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth()}.${date.getFullYear()}`}</h3>
+      <h3 style={{
+        margin: 0,
+        marginBottom: '10px'
+      }}>{Number(sale) > 0 ? 'Закрытие кассы' : 'Открытие кассы'}</h3>
+      <p style={{
+        margin: 0,
+        fontSize: '14px',
+        fontWeight: '300',
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
+        {`${date.getDate()}.${date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth()}.${date.getFullYear()}`}
+        <span>{`${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`}</span>
+      </p>
       <table className={s.table}>
         <tfoot>
           <tr><td colSpan="3">Сумма:</td><td className={s.right}>{Number(salePrice).toFixed(2)}</td></tr>
