@@ -17,7 +17,7 @@ function App() {
   React.useEffect(() => {
     if(path !== '/kassa'){
       const code = prompt('Введите код доступа к админке')
-      if(code !== 'aunabdyrai'){
+      if(code !== '4542'){
         alert('Неверный код доступа')
         nav('/kassa')
       }
