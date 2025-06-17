@@ -1,6 +1,8 @@
 import { Pages } from "../pages"
 import CodePrint from "../pages/codes-print"
+import KassaReport from "../pages/kassa-report"
 import Receipt from "../pages/receipt"
+import Return from "../pages/return "
 
 export const NavList = [
   {
@@ -32,6 +34,11 @@ export const NavList = [
     id: 6,
     title: 'Штрих коды',
     route: '/codes'
+  },
+  {
+    id: 7,
+    title: 'Возврат товара',
+    route: '/return'
   }
 ]
 
@@ -109,5 +116,15 @@ export const PUBLIC_ROUTES = [
     id: 10,
     page: <CodePrint />,
     route: '/codes-print/:code/:name/:price/'
-  }
+  },
+  {
+    id: 11,
+    page: <KassaReport />,
+    route: '/kassa-report'
+  }, 
+  {
+    id: 12,
+    page: <Return />,
+    route: '/return'
+  }, 
 ]

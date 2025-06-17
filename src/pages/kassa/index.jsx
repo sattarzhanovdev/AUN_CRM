@@ -8,6 +8,7 @@ const td = { border: '1px solid #eee', padding: 10 }
 const Kassa = () => {
   const [cart, setCart]   = React.useState([])
   const [goods, setGoods] = React.useState([])
+  const [sales, setSales] = React.useState([])
   const [payment, setPay] = React.useState('cash')
   const navigate          = useNavigate()
   const inputRef          = React.useRef()
@@ -19,6 +20,11 @@ const Kassa = () => {
     API.getStocks()
       .then(r => setGoods(r.data))
       .catch(e => console.error('Ошибка загрузки товаров', e))
+  }, [])
+
+  React.useEffect(() => {
+    API.getSales()
+      .then(r => setSales(r.data))
   }, [])
 
   /* ───────── Сканирование ───────── */
@@ -78,6 +84,20 @@ const Kassa = () => {
     }
   }
 
+  const openKassa = () => {
+    localStorage.setItem('open-kassa', 0) // очистка предыдущего чека
+    navigate('/kassa-report')
+  }
+const closeKassa = () => {
+    // берём только продажи текущего дня
+    const today = new Date().toISOString().slice(0, 10);        // YYYY‑MM‑DD
+    const summa = sales
+      ?.filter(s => (s.date || s.created_at || '').slice(0, 10) === today)
+      .reduce((sum, i) => sum + Number(i.total || 0), 0) || 0;
+
+    localStorage.setItem('open-kassa', summa.toFixed(2));       // сохраняем итог
+    navigate('/kassa-report');
+}
   /* ───────── UI ───────── */
   return (
     <div style={{ padding: 24, maxWidth: 900, margin: '0 auto', fontFamily: 'sans-serif' }}>
@@ -146,6 +166,15 @@ const Kassa = () => {
       <div style={{ textAlign: 'right' }}>
         <button onClick={handleSell} style={sellBtn}>✅ Продать</button>
       </div>
+
+      <div style={{ textAlign: 'right', marginTop: 20 }}>
+        {
+          localStorage.getItem('open-kassa')
+            ? <button onClick={closeKassa} style={sellBtn}>Закрыть кассу</button>
+            : <button onClick={openKassa} style={sellBtn}>Открыть кассу</button>
+        }
+      </div>
+
     </div>
   )
 }
