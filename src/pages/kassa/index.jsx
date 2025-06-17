@@ -108,6 +108,10 @@ const Kassa = () => {
   const handleSell = async()=>{
     if(!cart.length) return alert('Корзина пуста')
     try{
+      if(!localStorage.getItem('kassa-id')){
+        alert('Сначала откройте кассу')
+        return
+      }
       const payload = {
         total: total.toFixed(2),
         payment_type: payment,
