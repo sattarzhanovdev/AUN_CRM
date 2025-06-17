@@ -15,7 +15,7 @@ function App() {
 
   const path = window.location.pathname
   React.useEffect(() => {
-    if(path !== '/kassa'){
+    if(path !== '/kassa' || path !== '/kassa-report' || path !== 'receipt' || path !== '/codes-print' || path !== '/return'){
       const code = prompt('Введите код доступа к админке')
       if(code !== '4542'){
         alert('Неверный код доступа')
