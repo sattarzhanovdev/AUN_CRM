@@ -141,11 +141,16 @@ const Kassa = () => {
     const summa = sales.filter(s=>(s.date||'').slice(0,10)===today)
                        .reduce((t,i)=>t+Number(i.total||0),0)
     const id = localStorage.getItem('kassa-id')
-    API.closeKassa(id, summa)  
-      .then(res => {
-        if(res.status === 200){
-          nav('/kassa-report')
-        }
+    API.kassaItem(id)
+      .then(_ => {
+        API.closeKassa(id, summa)  
+          .then(res => {
+            if(res.status === 200){
+              localStorage.setItem('kassa-item', JSON.stringify(res.data))
+              nav('/kassa-report')
+            }
+          })
+        localStorage.removeItem('kassa-id');
       })
   }
 

@@ -18,14 +18,20 @@ const KassaReport = () => {
 
   const date = new Date();
   React.useEffect(() => {
-    API.kassaItem(kassaId)
-      .then(res => {
-        if(res.status === 200) {
+    const fetchData = async () => {
+      try {
+        const res = await API.kassaItem(kassaId);
+        if (res.status === 200) {
           setIsOpen(true);
         }
-        setSalePrice(res.data.closing_sum);
-      })
-  }, [])
+      } catch (err) {
+        const items = JSON.parse(localStorage.getItem('kassa-item'));
+        setSalePrice(items?.closing_sum);
+      }
+    };
+
+    fetchData();
+  }, []);
   
   return (
     /* 👇 важно: id статичный, className — из модуля */
@@ -55,12 +61,7 @@ const KassaReport = () => {
       <div className={s.buttons}>
         <button className={s.back} onClick={() => navigate(-1)}><IoIosArrowRoundBack /></button>
         <button className={s.print} onClick={() => {
-          if(isOpened){
-            localStorage.removeItem('kassa-id');
-            window.print()
-          }else{
-            window.print()
-          }
+          window.print()
         }}>
           Печать&nbsp;
           <BiPrinter />
