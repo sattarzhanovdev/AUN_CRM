@@ -12,8 +12,8 @@ axios.defaults.baseURL = 'https://auncrm.pythonanywhere.com/clients'
 
 function App() {
   const nav = useNavigate()
-
   const path = window.location.pathname
+
   React.useEffect(() => {
     if(path !== '/kassa' || path !== '/kassa-report' || path !== 'receipt' || path !== '/codes-print' || path !== '/return'){
       const code = prompt('Введите код доступа к админке')
