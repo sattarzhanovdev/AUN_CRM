@@ -22,6 +22,7 @@ function App() {
         nav('/kassa')
       }
     }
+    localStorage.setItem('isAdmin', true)
   }, [path])
   
   return (
