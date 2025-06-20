@@ -9,6 +9,7 @@ const KassaReport = () => {
   const navigate = useNavigate();
   const sale = JSON.parse(localStorage.getItem('open-kassa'));
   const [ salePrice, setSalePrice ] = React.useState(0);
+  const [ isOpened, setIsOpen ] = React.useState(false);
   const kassaId = localStorage.getItem('kassa-id');
 
   // if (!sale) return <p>Нет данных для чека</p>;
@@ -19,6 +20,9 @@ const KassaReport = () => {
   React.useEffect(() => {
     API.kassaItem(kassaId)
       .then(res => {
+        if(res.status === 200) {
+          setIsOpen(true);
+        }
         setSalePrice(res.data.closing_sum);
       })
   }, [])
@@ -51,9 +55,16 @@ const KassaReport = () => {
       <div className={s.buttons}>
         <button className={s.back} onClick={() => navigate(-1)}><IoIosArrowRoundBack /></button>
         <button className={s.print} onClick={() => {
-          localStorage.removeItem('kassa-id');
-          window.print()
-        }}>Печать&nbsp;<BiPrinter /></button>
+          if(isOpened){
+            localStorage.removeItem('kassa-id');
+            window.print()
+          }else{
+            window.print()
+          }
+        }}>
+          Печать&nbsp;
+          <BiPrinter />
+        </button>
       </div>
     </div>
   );
