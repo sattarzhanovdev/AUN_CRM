@@ -14,17 +14,27 @@ function App() {
   const nav = useNavigate()
   const path = window.location.pathname
 
-  React.useEffect(() => {
-    if(path !== '/kassa' || path !== '/kassa-report' || path !== 'receipt' || path !== '/codes-print' || path !== '/return'){
+  const isAdmin = JSON.parse(localStorage.getItem('isAdmin')) || false
+  const auth = () => {
+    if(!isAdmin){
       const code = prompt('Введите код доступа к админке')
-      if(code !== '4542'){
-        alert('Неверный код доступа')
+      if(code === '4542'){
+        localStorage.setItem('isAdmin', true)
+        nav('/')
+      }else if(code === '1234'){
+        localStorage.setItem('isAdmin', false)
         nav('/kassa')
       }
     }
-    localStorage.setItem('isAdmin', true)
+  }
+  React.useEffect(() => {
+    auth()
   }, [path])
-  
+
+  if(path === '/' || path === '/expenses' || path === '/finances' || path === '/stock' || path === 'codes') {
+    auth()
+  }
+
   return (
     <div>
       <Components.Navbar />
