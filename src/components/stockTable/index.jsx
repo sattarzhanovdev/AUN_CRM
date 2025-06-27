@@ -75,7 +75,22 @@ const StockTable = () => {
           <tbody>
             {clients?.length > 0 ? (
               clients.map(item => (
-                <tr key={item.id}>
+                <tr 
+                  key={item.id}
+                  style={
+                    Number(item.quantity) <= 15 ?
+                    {
+                      background: 'rgba(255, 0, 0, 0.3)'
+                    } 
+                    : Number(item.quantity) <= 50 ?
+                    {
+                      background: 'rgba(255, 255, 0, 0.3)'
+                    } :
+                    {
+
+                    }
+                  }
+                >
                   <td><img src={Icons.edit} alt="edit" onClick={() => {
                     localStorage.setItem('editStock', JSON.stringify(item))
                     setEditActive(true)
@@ -97,7 +112,7 @@ const StockTable = () => {
         </table>
       </div>
 
-      {editActive && <Components.EditStock setActive={setActive} />}
+      {editActive && <Components.EditStock setActive={setEditActive} />}
       {active && <Components.AddStock setActive={setActive} />}
     </div>
   );
