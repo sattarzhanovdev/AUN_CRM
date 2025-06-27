@@ -4,6 +4,7 @@ import { periods } from '../../utils';
 import { Icons } from '../../assets/icons';
 import { API } from '../../api';
 import { Components } from '..';
+import Barcode from 'react-barcode';
 
 const StockTable = () => {  
   const [month, setMonth] = React.useState('');
@@ -65,6 +66,7 @@ const StockTable = () => {
               <th>Осталось</th>
               <th>Цена поставщика за ед</th>
               <th>Цена на продаже за ед</th>
+              <th>Штрих-код</th>
               <th>
                 <button onClick={() => setActive(true)}>
                   + Добавить
@@ -100,6 +102,14 @@ const StockTable = () => {
                   <td>{item.quantity}</td>
                   <td>{item.price_seller}</td>
                   <td>{item.price}</td>
+                  <td>
+                    <Barcode 
+                      value={item.code}
+                      width={0.6}
+                      height={20}
+                      fontSize={12}
+                    />
+                  </td>
                 </tr>
               ))
             ) : (
