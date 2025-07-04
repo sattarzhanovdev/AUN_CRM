@@ -57,15 +57,19 @@ const StockTable = () => {
   return (
     <div className={c.workers}>
       <div className={c.table}>
+        <h2>Сумма товаров: {clients?.length}</h2>
         <table>
           <thead>
             <tr>
               <th><img src={Icons.edit} alt="edit" /></th>
+              <th>№</th>
               <th>Наименование</th>
               <th>Было добавлено (кол-во)</th>
               <th>Осталось</th>
               <th>Цена поставщика за ед</th>
               <th>Цена на продаже за ед</th>
+              <th>Сумма поставщику</th>
+              <th>Сумма от продаж</th>
               <th>Штрих-код</th>
               <th>
                 <button onClick={() => setActive(true)}>
@@ -76,7 +80,7 @@ const StockTable = () => {
           </thead>
           <tbody>
             {clients?.length > 0 ? (
-              clients.map(item => (
+              clients.map((item, i) => (
                 <tr 
                   key={item.id}
                   style={
@@ -97,11 +101,14 @@ const StockTable = () => {
                     localStorage.setItem('editStock', JSON.stringify(item))
                     setEditActive(true)
                   }}/></td>
+                  <td>{i+1}</td>
                   <td>{item.name}</td>
                   <td>{item.fixed_quantity}</td>
                   <td>{item.quantity}</td>
                   <td>{item.price_seller}</td>
                   <td>{item.price}</td>
+                  <td>{item.price_seller*item.quantity}</td>
+                  <td>{item.price*item.quantity}</td>
                   <td>
                     <Barcode 
                       value={item.code}
