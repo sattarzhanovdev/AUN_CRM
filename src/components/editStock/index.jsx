@@ -13,7 +13,7 @@ const EditStock = ({ setActive }) => {
   const [quantity, setQuantity] = useState(initial.quantity || '')
   const [price, setPrice] = useState(initial.price || '')
   const [priceSeller, setPriceSeller] = useState(initial.price_seller || '')
-  const [category, setCategory] = useState(initial.category || '')
+  const [category, setCategory] = useState(initial.category.id || '')
   const [unit] = useState(initial.unit || 'шт') // если не нужно менять — без setUnit
   const [fixedQuantity, setFixedQuantity] = useState(initial.fixed_quantity || initial.quantity || 0)
 

@@ -12,6 +12,7 @@ const StockTable = () => {
   const [active, setActive] = React.useState(false);
   const [editActive, setEditActive] = React.useState(false);
   const [selectedWeek, setSelectedWeek] = React.useState(5); // 5 — Весь месяц
+  const [categories, setCategories] = React.useState(''); // 5 — Весь месяц
 
   const months = [
     "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
@@ -28,7 +29,7 @@ const StockTable = () => {
 
     API.getStocks()
       .then(res => {
-        setClients(res.data);
+        setClients(res.data.reverse());
       });
   }, []);
 
@@ -54,12 +55,43 @@ const StockTable = () => {
     return clientWeek === selectedWeek;
   });
 
+  React.useEffect(() => {
+    API.getCategories()
+      .then(res => {
+        setCategories(res.data)
+      })
+  }, [])
+
+  const filterGoods = (id) => {
+    return id ? clients?.filter(item => Number(item.id) === Number(id)) : clients 
+  }
+
   return (
     <div className={c.workers}>
       <div className={c.table}>
-        <h2>Сумма товаров: {clients?.length}</h2>
+        {/* <h2>Сумма товаров: {clients?.length}</h2> */}
+        <select className={c.filteration} onChange={e => filterGoods(e.target.value)}>
+          {
+            categories && categories.map(item => (
+              <option value={item.id}>{item.name}</option>
+            ))
+          } 
+        </select>
         <table>
           <thead>
+            <tr>
+              <th>_</th>
+              <th>{clients?.length} позиций</th>
+              <th></th>
+              <th>{clients?.reduce((a, b) => Number(a)+Number(b.fixed_quantity), 0)}</th>
+              <th>{clients?.reduce((a, b) => Number(a)+Number(b.quantity), 0)}</th>
+              <th>{clients?.reduce((a, b) => Number(a)+Number(b.price_seller*b.fixed_quantity), 0)} сом</th>
+              <th>{clients?.reduce((a, b) => Number(a)+Number(b.price*b.fixed_quantity), 0)} сом</th>
+              <th></th>
+              <th>
+                
+              </th>
+            </tr>
             <tr>
               <th><img src={Icons.edit} alt="edit" /></th>
               <th>№</th>
@@ -68,8 +100,6 @@ const StockTable = () => {
               <th>Осталось</th>
               <th>Цена поставщика за ед</th>
               <th>Цена на продаже за ед</th>
-              <th>Сумма поставщику</th>
-              <th>Сумма от продаж</th>
               <th>Штрих-код</th>
               <th>
                 <button onClick={() => setActive(true)}>
@@ -79,8 +109,8 @@ const StockTable = () => {
             </tr>
           </thead>
           <tbody>
-            {clients?.length > 0 ? (
-              clients.map((item, i) => (
+            {filterGoods()?.length > 0 ? (
+              filterGoods().map((item, i) => (
                 <tr 
                   key={item.id}
                   style={
@@ -107,8 +137,6 @@ const StockTable = () => {
                   <td>{item.quantity}</td>
                   <td>{item.price_seller}</td>
                   <td>{item.price}</td>
-                  <td>{item.price_seller*item.quantity}</td>
-                  <td>{item.price*item.quantity}</td>
                   <td>
                     <Barcode 
                       value={item.code}
