@@ -4,18 +4,18 @@ import { Icons } from '../../assets/icons'
 import { API } from '../../api'
 
 const EditStock = ({ setActive }) => {
-  // Получение одного товара из localStorage
   const initial = JSON.parse(localStorage.getItem('editStock'))
 
-  // Состояния для каждого поля
   const [code, setCode] = useState(initial.code || '')
   const [name, setName] = useState(initial.name || '')
   const [quantity, setQuantity] = useState(initial.quantity || '')
   const [price, setPrice] = useState(initial.price || '')
   const [priceSeller, setPriceSeller] = useState(initial.price_seller || '')
-  const [category, setCategory] = useState(initial.category.id || '')
-  const [unit] = useState(initial.unit || 'шт') // если не нужно менять — без setUnit
-  const [fixedQuantity, setFixedQuantity] = useState(initial.fixed_quantity || initial.quantity || 0)
+  const [category, setCategory] = useState(initial.category?.id || '')
+  const [unit] = useState(initial.unit || 'шт')
+  const [fixedQuantity, setFixedQuantity] = useState(
+    initial.fixed_quantity ?? initial.quantity ?? 0
+  )
 
   const [cats, setCats] = useState([])
 
@@ -29,11 +29,11 @@ const EditStock = ({ setActive }) => {
         price_seller: +priceSeller || 0,
         category_id: category || null,
         unit,
-        fixed_quantity: +fixedQuantity || +quantity || 0
+        fixed_quantity: +fixedQuantity || 0,
       }
 
-      await API.putStocks(initial.id || null, payload)
-      
+      await API.putStocks(initial.id, payload) // 👈 запрос только по ID
+
       alert('Товар сохранён')
       setActive(false)
       window.location.reload()
@@ -97,7 +97,7 @@ const EditStock = ({ setActive }) => {
           <label htmlFor="cat">Категория</label>
           <select
             id="cat"
-            value={initial.category.id}
+            value={category}
             onChange={e => setCategory(e.target.value)}
           >
             <option value="">‒ выберите ‒</option>
@@ -118,6 +118,18 @@ const EditStock = ({ setActive }) => {
             value={quantity}
             placeholder="0"
             onChange={e => setQuantity(e.target.value)}
+          />
+        </div>
+
+        {/* фиксированное количество */}
+        <div className={c.addExpense__form__item}>
+          <label htmlFor="fqty">Фиксированное количество</label>
+          <input
+            id="fqty"
+            type="number"
+            value={fixedQuantity}
+            placeholder="0"
+            onChange={e => setFixedQuantity(e.target.value)}
           />
         </div>
 
