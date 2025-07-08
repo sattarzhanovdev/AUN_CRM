@@ -16,16 +16,24 @@ const Kassa = () => {
   const [query, setQuery] = useState('')
   const [suggest, setSuggest] = useState([])
   const [highlight, setHighlight] = useState(-1)
+  const [multipleMatches, setMultipleMatches] = useState(null)
 
   const scanRef = useRef()
   const nameRef = useRef()
   const nav = useNavigate()
   const total = cart.reduce((s, i) => s + i.qty * +i.price, 0)
 
-  const [multipleMatches, setMultipleMatches] = useState(null) // popup выбора товаров
-
   useEffect(() => {
-    API.getStocks().then(r => setGoods(r.data)).catch(e => console.error('Ошибка загрузки товаров', e))
+    API.getStocks()
+      .then(r => {
+        const enriched = r.data.map(g => ({
+          ...g,
+          code_array: g.code.split(',').map(c => c.trim())
+        }))
+        setGoods(enriched)
+      })
+      .catch(e => console.error('Ошибка загрузки товаров', e))
+
     API.getSales().then(r => setSales(r.data))
   }, [])
 
@@ -34,7 +42,8 @@ const Kassa = () => {
     const code = e.target.value.trim()
     if (!code) return
 
-    const matches = goods.filter(g => g.code === code)
+    const matches = goods.filter(g => g.code_array.includes(code))
+
     if (matches.length === 0) {
       alert('Товар не найден')
     } else if (matches.length === 1) {
@@ -49,7 +58,10 @@ const Kassa = () => {
   const handleNameChange = e => {
     const val = e.target.value
     setQuery(val)
-    if (val.length < 2) { setSuggest([]); return }
+    if (val.length < 2) {
+      setSuggest([])
+      return
+    }
 
     const re = new RegExp(val, 'i')
     setSuggest(goods.filter(g => re.test(g.name)).slice(0, 8))
@@ -78,7 +90,9 @@ const Kassa = () => {
   }
 
   const clearSuggest = () => {
-    setQuery(''); setSuggest([]); setHighlight(-1)
+    setQuery('')
+    setSuggest([])
+    setHighlight(-1)
   }
 
   const addToCart = item => {
@@ -120,18 +134,21 @@ const Kassa = () => {
       }
       const res = await API.createSale(payload)
       localStorage.setItem('receipt', JSON.stringify(res.data))
-      setCart([]); nav('/receipt')
-    } catch (e) { console.error(e); alert('Ошибка при продаже') }
+      setCart([])
+      nav('/receipt')
+    } catch (e) {
+      console.error(e)
+      alert('Ошибка при продаже')
+    }
   }
 
   const openKassa = () => {
-    API.openKassa(0)
-      .then(res => {
-        if (res.status === 201) {
-          localStorage.setItem('kassa-id', res.data.id);
-          nav('/kassa-report')
-        }
-      })
+    API.openKassa(0).then(res => {
+      if (res.status === 201) {
+        localStorage.setItem('kassa-id', res.data.id)
+        nav('/kassa-report')
+      }
+    })
   }
 
   const closeKassa = () => {
@@ -139,17 +156,15 @@ const Kassa = () => {
     const summa = sales.filter(s => (s.date || '').slice(0, 10) === today)
       .reduce((t, i) => t + Number(i.total || 0), 0)
     const id = localStorage.getItem('kassa-id')
-    API.kassaItem(id)
-      .then(_ => {
-        API.closeKassa(id, summa)
-          .then(res => {
-            if (res.status === 200) {
-              localStorage.setItem('kassa-item', JSON.stringify(res.data))
-              nav('/kassa-report')
-            }
-          })
-        localStorage.removeItem('kassa-id');
+    API.kassaItem(id).then(_ => {
+      API.closeKassa(id, summa).then(res => {
+        if (res.status === 200) {
+          localStorage.setItem('kassa-item', JSON.stringify(res.data))
+          nav('/kassa-report')
+        }
       })
+      localStorage.removeItem('kassa-id')
+    })
   }
 
   return (
@@ -190,8 +205,7 @@ const Kassa = () => {
 
       <div style={{ marginBottom: 20 }}>
         <label>Тип оплаты:&nbsp;</label>
-        <select value={payment} onChange={e => setPay(e.target.value)}
-          style={{ padding: 6 }}>
+        <select value={payment} onChange={e => setPay(e.target.value)} style={{ padding: 6 }}>
           <option value="cash">Наличные</option>
           <option value="card">Карта</option>
         </select>

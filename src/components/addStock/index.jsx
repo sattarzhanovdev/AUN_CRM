@@ -23,7 +23,6 @@ const AddStock = ({ setActive }) => {
     setRows(prev =>
       prev.map((row, i) => {
         if (i !== index) return row
-        // фиксируем первоначальное количество
         if (field === 'quantity') {
           return {
             ...row,
@@ -41,13 +40,14 @@ const AddStock = ({ setActive }) => {
   // ---------- save ----------
   const handleSave = () => {
     const payload = rows.map(item => ({
-      ...item,
-      code: item.code.split(','),
-      fixed_quantity: item.fixed_quantity || item.quantity || 0,
+      name: item.name,
+      code: item.code.split(',').map(c => c.trim()).filter(Boolean),
       quantity: +item.quantity || 0,
       price: +item.price || 0,
       price_seller: +item.price_seller || 0,
-      category_id: item.category || null
+      unit: item.unit || 'шт',
+      fixed_quantity: item.fixed_quantity || item.quantity || 0,
+      category_id: +item.category || null
     }))
 
     API.postStock(payload)
@@ -82,7 +82,7 @@ const AddStock = ({ setActive }) => {
             <input
               id={`code-${idx}`}
               value={row.code}
-              placeholder="Код товара"
+              placeholder="Код товара (через запятую)"
               onChange={e => handleChange(idx, 'code', e.target.value)}
             />
           </div>
