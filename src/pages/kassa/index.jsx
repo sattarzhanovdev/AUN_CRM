@@ -112,6 +112,10 @@ const Kassa = () => {
     setCart(p => p.map((r, idx) =>
       idx === i ? { ...r, qty: Math.max(1, parseInt(v) || 1) } : r))
 
+  const updatePrice = (i, value) =>
+    setCart(p => p.map((r, idx) =>
+      idx === i ? { ...r, price: parseFloat(value) || 0 } : r))
+
   const removeRow = idx => setCart(p => p.filter((_, i) => i !== idx))
 
   const handleSell = async () => {
@@ -213,14 +217,28 @@ const Kassa = () => {
 
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 20 }}>
         <thead style={{ background: '#f0f0f0' }}>
-          <tr><th style={th}>Название</th><th style={th}>Цена</th>
-            <th style={th}>Кол-во</th><th style={th}>Сумма</th><th style={th} /></tr>
+          <tr>
+            <th style={th}>Название</th>
+            <th style={th}>Цена</th>
+            <th style={th}>Кол-во</th>
+            <th style={th}>Сумма</th>
+            <th style={th} />
+          </tr>
         </thead>
         <tbody>
           {cart.map((it, idx) => (
             <tr key={idx}>
               <td style={td}>{it.name}</td>
-              <td style={td}>{(+it.price).toFixed(2)} сом</td>
+              <td style={td}>
+                <input
+                  type="number"
+                  min={0}
+                  step={0.01}
+                  value={it.price}
+                  onChange={e => updatePrice(idx, e.target.value)}
+                  style={{ width: 70, textAlign: 'center' }}
+                />
+              </td>
               <td style={td}>
                 <button onClick={() => changeQty(idx, -1)} style={btn}>−</button>
                 <input type="number" min={1} value={it.qty}
@@ -252,7 +270,6 @@ const Kassa = () => {
           : <button onClick={openKassa} style={sellBtn}>Открыть кассу</button>}
       </div>
 
-      {/* 🔽 Popup выбора товара по одному штрихкоду */}
       {multipleMatches && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,

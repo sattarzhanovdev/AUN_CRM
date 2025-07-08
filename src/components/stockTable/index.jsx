@@ -69,7 +69,7 @@ const StockTable = () => {
 
     // Фильтрация по категории
     if (selectedCategory) {
-      filtered = filtered?.filter(item => Number(item.category?.id) === Number(selectedCategory));
+      filtered = filtered?.filter(item => item.category === selectedCategory);
     }
 
     return filtered;
@@ -85,7 +85,7 @@ const StockTable = () => {
         >
           <option value="">‒ Все категории ‒</option>
           {categories && categories.map(item => (
-            <option key={item.id} value={item.id}>{item.name}</option>
+            <option key={item.id} value={item.name}>{item.name}</option>
           ))}
         </select>
 
