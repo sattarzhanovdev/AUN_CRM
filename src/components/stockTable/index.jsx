@@ -122,7 +122,7 @@ const StockTable = () => {
                 <tr
                   key={item.id}
                   style={
-                    Number(item.quantity) <= 15
+                    Number(item.quantity) <= 30
                       ? { background: 'rgba(255, 0, 0, 0.3)' }
                       : Number(item.quantity) <= 50
                       ? { background: 'rgba(255, 255, 0, 0.3)' }

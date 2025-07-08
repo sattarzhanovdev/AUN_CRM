@@ -42,6 +42,7 @@ const AddStock = ({ setActive }) => {
   const handleSave = () => {
     const payload = rows.map(item => ({
       ...item,
+      code: item.code.split(','),
       fixed_quantity: item.fixed_quantity || item.quantity || 0,
       quantity: +item.quantity || 0,
       price: +item.price || 0,
