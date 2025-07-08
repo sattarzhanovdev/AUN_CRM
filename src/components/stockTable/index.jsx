@@ -147,7 +147,7 @@ const StockTable = () => {
                   <td>{item.price}</td>
                   <td>
                     <Barcode
-                      value={item.code}
+                      value={item.code.split(',')[0]}
                       width={0.6}
                       height={20}
                       fontSize={12}
