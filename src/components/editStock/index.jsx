@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import c from './add.module.scss'
 import { Icons } from '../../assets/icons'
-import { API } from '../../api'
 
-const EditStock = ({ setActive }) => {
+const EditStock = ({ setActive, selectedBranch }) => {
   const initial = JSON.parse(localStorage.getItem('editStock'))
 
   const [code, setCode] = useState(initial.code || '')
@@ -19,6 +18,10 @@ const EditStock = ({ setActive }) => {
 
   const [cats, setCats] = useState([])
 
+  const branchAPI = selectedBranch === 'sokuluk'
+    ? 'https://auncrm.pythonanywhere.com'
+    : 'https://auncrm2.pythonanywhere.com'
+
   const handleSave = async () => {
     try {
       const payload = {
@@ -32,7 +35,11 @@ const EditStock = ({ setActive }) => {
         fixed_quantity: +fixedQuantity || 0,
       }
 
-      await API.putStocks(initial.id, payload) // 👈 запрос только по ID
+      await fetch(`${branchAPI}/clients/stocks/${initial.id}/`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
 
       alert('Товар сохранён')
       setActive(false)
@@ -47,7 +54,10 @@ const EditStock = ({ setActive }) => {
     if (!window.confirm('Вы уверены, что хотите удалить этот товар?')) return
 
     try {
-      await API.deleteStocks(initial.id)
+      await fetch(`${branchAPI}/clients/stocks/${initial.id}/`, {
+        method: 'DELETE'
+      })
+
       alert('Товар удалён')
       setActive(false)
       window.location.reload()
@@ -58,10 +68,11 @@ const EditStock = ({ setActive }) => {
   }
 
   useEffect(() => {
-    API.getCategories()
-      .then(res => setCats(res.data))
+    fetch(`${branchAPI}/clients/categories/`)
+      .then(res => res.json())
+      .then(data => setCats(data))
       .catch(e => console.error('Не удалось загрузить категории', e))
-  }, [])
+  }, [branchAPI])
 
   return (
     <div className={c.addExpense}>

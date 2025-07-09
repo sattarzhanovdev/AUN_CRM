@@ -1,7 +1,6 @@
 import React from 'react'
 import c from './add.module.scss'
 import { Icons } from '../../assets/icons'
-import { API } from '../../api'
 
 const emptyRow = {
   name: '',
@@ -14,11 +13,14 @@ const emptyRow = {
   fixed_quantity: ''
 }
 
-const AddStock = ({ setActive }) => {
+const AddStock = ({ setActive, selectedBranch }) => {
   const [rows, setRows] = React.useState([emptyRow])
   const [categories, setCategories] = React.useState([])
 
-  // ---------- input helpers ----------
+  const branchAPI = selectedBranch === 'sokuluk'
+    ? 'https://auncrm.pythonanywhere.com'
+    : 'https://auncrm2.pythonanywhere.com'
+
   const handleChange = (index, field, value) => {
     setRows(prev =>
       prev.map((row, i) => {
@@ -37,8 +39,7 @@ const AddStock = ({ setActive }) => {
 
   const addRow = () => setRows(prev => [...prev, emptyRow])
 
-  // ---------- save ----------
-  const handleSave = () => {
+  const handleSave = async () => {
     const payload = rows.map(item => ({
       name: item.name,
       code: item.code.split(',').map(c => c.trim()).filter(Boolean),
@@ -46,28 +47,36 @@ const AddStock = ({ setActive }) => {
       price: +item.price || 0,
       price_seller: +item.price_seller || 0,
       unit: item.unit || 'шт',
-      fixed_quantity: item.fixed_quantity || item.quantity || 0,
+      fixed_quantity: +item.fixed_quantity || +item.quantity || 0,
       category_id: +item.category || null
     }))
 
-    API.postStock(payload)
-      .then(res => {
-        if (res.status === 201 || res.status === 200) {
-          setActive(false)
-          window.location.reload()
-        }
+    try {
+      const res = await fetch(`${branchAPI}/clients/stocks/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       })
-      .catch(err => console.error('Ошибка при сохранении товара:', err))
+
+      if (res.status === 201 || res.status === 200) {
+        alert('Товары успешно добавлены')
+        setActive(false)
+        window.location.reload()
+      } else {
+        alert('Ошибка при сохранении товара')
+      }
+    } catch (err) {
+      console.error('Ошибка при сохранении товара:', err)
+    }
   }
 
-  // ---------- fetch categories once ----------
   React.useEffect(() => {
-    API.getCategories()
-      .then(res => setCategories(res.data))
+    fetch(`${branchAPI}/clients/categories/`)
+      .then(res => res.json())
+      .then(data => setCategories(data))
       .catch(err => console.error('Не удалось загрузить категории:', err))
-  }, [])
+  }, [branchAPI])
 
-  // ---------- render ----------
   return (
     <div className={c.addExpense}>
       <div className={c.addExpense__header}>
@@ -76,7 +85,6 @@ const AddStock = ({ setActive }) => {
 
       {rows.map((row, idx) => (
         <div key={idx} className={c.addExpense__form}>
-          {/* код */}
           <div className={c.addExpense__form__item}>
             <label htmlFor={`code-${idx}`}>Код</label>
             <input
@@ -87,7 +95,6 @@ const AddStock = ({ setActive }) => {
             />
           </div>
 
-          {/* наименование */}
           <div className={c.addExpense__form__item}>
             <label htmlFor={`name-${idx}`}>Наименование</label>
             <input
@@ -98,7 +105,6 @@ const AddStock = ({ setActive }) => {
             />
           </div>
 
-          {/* категория */}
           <div className={c.addExpense__form__item}>
             <label htmlFor={`cat-${idx}`}>Категория</label>
             <select
@@ -113,7 +119,6 @@ const AddStock = ({ setActive }) => {
             </select>
           </div>
 
-          {/* количество */}
           <div className={c.addExpense__form__item}>
             <label htmlFor={`qty-${idx}`}>Количество</label>
             <input
@@ -125,7 +130,6 @@ const AddStock = ({ setActive }) => {
             />
           </div>
 
-          {/* цена поставщика */}
           <div className={c.addExpense__form__item}>
             <label htmlFor={`ps-${idx}`}>Цена поставщика</label>
             <input
@@ -137,7 +141,6 @@ const AddStock = ({ setActive }) => {
             />
           </div>
 
-          {/* цена продажи */}
           <div className={c.addExpense__form__item}>
             <label htmlFor={`pr-${idx}`}>Цена продажи</label>
             <input

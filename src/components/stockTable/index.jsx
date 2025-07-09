@@ -5,19 +5,19 @@ import { API } from '../../api';
 import { Components } from '..';
 import Barcode from 'react-barcode';
 
-const StockTable = () => {  
+const StockTable = () => {
   const [month, setMonth] = React.useState('');
   const [clients, setClients] = React.useState(null);
   const [active, setActive] = React.useState(false);
   const [editActive, setEditActive] = React.useState(false);
-  const [selectedWeek, setSelectedWeek] = React.useState(5); // 5 — Весь месяц
+  const [selectedWeek, setSelectedWeek] = React.useState(5);
   const [categories, setCategories] = React.useState([]);
   const [selectedCategory, setSelectedCategory] = React.useState('');
+  const [selectedBranch, setSelectedBranch] = React.useState('sokuluk');
 
-  const months = [
-    "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
-    "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
-  ];
+  const branchAPI = selectedBranch === 'sokuluk'
+    ? 'https://auncrm.pythonanywhere.com'
+    : 'https://auncrm2.pythonanywhere.com';
 
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
@@ -27,25 +27,18 @@ const StockTable = () => {
     const monthName = currentDate.toLocaleString('ru', { month: 'long' });
     setMonth(monthName.charAt(0).toUpperCase() + monthName.slice(1));
 
-    API.getStocks()
-      .then(res => {
-        setClients(res.data.reverse());
-      });
-  }, []);
+    fetch(`${branchAPI}/clients/stocks/`)
+      .then(res => res.json())
+      .then(data => setClients(data.reverse()))
+      .catch(err => console.error('Ошибка загрузки товаров:', err));
+  }, [branchAPI]);
 
   React.useEffect(() => {
-    API.getCategories()
-      .then(res => {
-        setCategories(res.data);
-      });
-  }, []);
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = date.getDate();
-    const month = date.toLocaleString('ru-RU', { month: 'long' });
-    return `${day} ${month}`;
-  };
+    fetch(`${branchAPI}/clients/categories/`)
+      .then(res => res.json())
+      .then(data => setCategories(data))
+      .catch(err => console.error('Ошибка загрузки категорий:', err));
+  }, [branchAPI]);
 
   const getWeekNumber = (dateStr) => {
     const day = new Date(dateStr).getDate();
@@ -58,25 +51,31 @@ const StockTable = () => {
 
   const filterGoods = () => {
     let filtered = clients;
-
-    // Фильтрация по неделе (если надо)
     if (selectedWeek !== 5) {
-      filtered = filtered?.filter(item => {
-        const clientWeek = getWeekNumber(item.appointment_date);
-        return clientWeek === selectedWeek;
-      });
+      filtered = filtered?.filter(item =>
+        getWeekNumber(item.appointment_date) === selectedWeek
+      );
     }
-
-    // Фильтрация по категории
     if (selectedCategory) {
       filtered = filtered?.filter(item => item.category === selectedCategory);
     }
-
     return filtered;
   };
 
   return (
     <div className={c.workers}>
+      <div style={{ marginBottom: 20 }}>
+        <label>Филиал:&nbsp;</label>
+        <select
+          value={selectedBranch}
+          onChange={e => setSelectedBranch(e.target.value)}
+          style={{ padding: 6 }}
+        >
+          <option value="sokuluk">Сокулук</option>
+          <option value="stock">Склад</option>
+        </select>
+      </div>
+
       <div className={c.table}>
         <select
           className={c.filteration}
@@ -106,10 +105,10 @@ const StockTable = () => {
               <th><img src={Icons.edit} alt="edit" /></th>
               <th>№</th>
               <th>Наименование</th>
-              <th>Было добавлено (кол-во)</th>
+              <th>Было добавлено</th>
               <th>Осталось</th>
-              <th>Цена поставщика за ед</th>
-              <th>Цена на продаже за ед</th>
+              <th>Цена поставщика</th>
+              <th>Цена продажи</th>
               <th>Штрих-код</th>
               <th>
                 <button onClick={() => setActive(true)}>+ Добавить</button>
@@ -119,16 +118,14 @@ const StockTable = () => {
           <tbody>
             {filterGoods()?.length > 0 ? (
               filterGoods().map((item, i) => (
-                <tr
-                  key={item.id}
-                  style={
-                    Number(item.quantity) <= 30
-                      ? { background: 'rgba(255, 0, 0, 0.3)' }
-                      : Number(item.quantity) <= 50
-                      ? { background: 'rgba(255, 255, 0, 0.3)' }
-                      : {}
-                  }
-                >
+                <tr key={item.id}
+                    style={
+                      Number(item.quantity) <= 30
+                        ? { background: 'rgba(255, 0, 0, 0.3)' }
+                        : Number(item.quantity) <= 50
+                        ? { background: 'rgba(255, 255, 0, 0.3)' }
+                        : {}
+                    }>
                   <td>
                     <img
                       src={Icons.edit}
@@ -164,8 +161,8 @@ const StockTable = () => {
         </table>
       </div>
 
-      {editActive && <Components.EditStock setActive={setEditActive} />}
-      {active && <Components.AddStock setActive={setActive} />}
+      {editActive && <Components.EditStock setActive={setEditActive} selectedBranch={selectedBranch} />}
+      {active && <Components.AddStock setActive={setActive} selectedBranch={selectedBranch} />}
     </div>
   );
 };
