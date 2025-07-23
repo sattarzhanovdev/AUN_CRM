@@ -163,10 +163,54 @@
               letter-spacing: -0.17px;
               border-radius: 4px;
             }
-
+            button{
+              padding: 6px 12px;
+              border-radius: 7px;
+              border: 1.5px solid #A4A4A8;
+              background: none;
+              color: #A4A4A8;
+              font-size: 17px;
+              font-style: normal;
+              font-weight: 500;
+              line-height: 18px; /* 105.882% */
+              letter-spacing: -0.17px;
+            }
           }
         }
       }
     }
   }
+}
+
+
+.popupOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.popup table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.popup th, .popup td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
 }

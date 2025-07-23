@@ -17,6 +17,7 @@ const Kassa = () => {
   const [suggest, setSuggest] = useState([])
   const [highlight, setHighlight] = useState(-1)
   const [multipleMatches, setMultipleMatches] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const scanRef = useRef()
   const nameRef = useRef()
@@ -35,6 +36,14 @@ const Kassa = () => {
       .catch(e => console.error('Ошибка загрузки товаров', e))
 
     API.getSales().then(r => setSales(r.data))
+
+    // При монтировании проверяем черновик
+    const draft = localStorage.getItem('kassa-draft')
+    if (draft) {
+      const parsed = JSON.parse(draft)
+      if (parsed.cart) setCart(parsed.cart)
+      if (parsed.payment) setPay(parsed.payment)
+    }
   }, [])
 
   const handleScan = e => {
@@ -125,6 +134,7 @@ const Kassa = () => {
         alert('Сначала откройте кассу')
         return
       }
+      setLoading(true) // включаем загрузку
       const payload = {
         total: total.toFixed(2),
         payment_type: payment,
@@ -143,6 +153,8 @@ const Kassa = () => {
     } catch (e) {
       console.error(e)
       alert('Ошибка при продаже')
+    } finally {
+      setLoading(false) // выключаем загрузку
     }
   }
 
@@ -169,6 +181,19 @@ const Kassa = () => {
       })
       localStorage.removeItem('kassa-id')
     })
+  }
+
+  const saveDraft = () => {
+    localStorage.setItem('kassa-draft', JSON.stringify({ cart, payment }))
+    setCart([]) // очистить корзину после сохранения
+    alert('Касса отложена и очищена')
+  }
+
+  const restoreDraft = () => {
+    const draft = JSON.parse(localStorage.getItem('kassa-draft') || '{}')
+    if (draft.cart) setCart(draft.cart)
+    if (draft.payment) setPay(draft.payment)
+    alert('Касса восстановлена')
   }
 
   return (
@@ -270,6 +295,11 @@ const Kassa = () => {
           : <button onClick={openKassa} style={sellBtn}>Открыть кассу</button>}
       </div>
 
+      <div style={{ textAlign: 'right', marginTop: 10 }}>
+        <button onClick={saveDraft} style={{ ...sellBtn, background: '#2980b9' }}>💾 Отложить кассу</button>
+        <button onClick={restoreDraft} style={{ ...sellBtn, background: '#8e44ad', marginLeft: 10 }}>♻️ Восстановить</button>
+      </div>
+
       {multipleMatches && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -309,6 +339,20 @@ const Kassa = () => {
                 Отмена
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {loading && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.6)', display: 'flex',
+          justifyContent: 'center', alignItems: 'center', zIndex: 10000
+        }}>
+          <div style={{
+            background: '#fff', padding: 30, borderRadius: 10,
+            fontSize: 18, fontWeight: 'bold'
+          }}>
+            ⏳ Подождите, идет обработка продажи…
           </div>
         </div>
       )}
