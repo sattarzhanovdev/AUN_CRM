@@ -46,6 +46,8 @@ const Kassa = () => {
     }
   }, [])
 
+    
+
   const handleScan = e => {
     if (e.key !== 'Enter') return
     const code = e.target.value.trim()
@@ -96,6 +98,10 @@ const Kassa = () => {
     addToCart(suggest[i])
     clearSuggest()
     nameRef.current.focus()
+    clearSuggest()
+    setTimeout(() => {
+      scanRef.current?.focus()
+    }, 0)
   }
 
   const clearSuggest = () => {
