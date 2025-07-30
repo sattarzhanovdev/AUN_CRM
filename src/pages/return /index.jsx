@@ -98,7 +98,8 @@ const Return = () => {
     const payload = cart.map(i => ({
       sale_item: i.sale_item,
       quantity : i.qty,
-      reason   : reason
+      reason   : reason,
+      branch: 'Сокулук'
     }))
 
     try {

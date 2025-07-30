@@ -28,7 +28,7 @@ const Receipt = () => {
         </thead>
 
         <tbody>
-          {sale.items.map((it, i) => (
+          {sale?.items?.map((it, i) => (
             <tr key={it.code}>
               <td>{i + 1}</td>
               <td className={s.left}>{it.name}</td>
