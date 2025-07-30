@@ -154,6 +154,13 @@ const Kassa = () => {
           price: +i.price,
           quantity: i.qty,
           total: (+i.price * i.qty).toFixed(2)
+        })),
+        raw_items: cart.map(i => ({
+          code: i.code,
+          name: i.name,
+          price: +i.price,
+          quantity: i.qty,
+          total: (+i.price * i.qty).toFixed(2)
         }))
       }
       const res = await API.createSale(payload)
